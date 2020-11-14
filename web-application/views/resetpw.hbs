@@ -1,0 +1,27 @@
+{{> header }}
+<main role="main" class="container">
+<div class="jumbotron login">
+    <h1>{{title}}</h1>
+
+    {{#if errors}}
+        {{#each errors}}
+            <div class="alert alert-danger" role="alert">
+                {{this.msg}}
+            </div>
+        {{/each}}
+    {{/if}}
+
+    <form method="POST" action="/resetpw">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" name="username" class="form-control" placeholder="Username">
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" name="email" class="form-control" placeholder="Email">
+        </div>
+        <button type="submit" class="btn btn-primary">Send mail</button>
+    </form>
+</div>
+</main>
+{{> footer-end }}
