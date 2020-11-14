@@ -1,0 +1,8 @@
+DB_HOST = "localhost"
+DB_USER = "root"
+DB_PASSWORD = "$nB,aHw4!"
+DB_NAME = "obd/gps-datenlogger"
+PATH = "/home/pi/Studienarbeit_OBD_Datenlogger/OBD-Logger/Files/"
+PATH_REPO = "/home/pi/Studienarbeit_OBD_Datenlogger/"
+DOWNLOAD_CARS_CSV = "https://raw.githubusercontent.com/DHBW-Studienarbeit-Fahrzeug-Datenlogger/Datenlogger/main/MySQL-server/cars_table_update.csv"
+PATH_CARS_CSV = r"C:\Studium\Studienarbeit\cars_update.csv"
