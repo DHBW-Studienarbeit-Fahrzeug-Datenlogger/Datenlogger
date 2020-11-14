@@ -1,0 +1,8 @@
+DB_HOST = "localhost"
+DB_USER = ""
+DB_PASSWORD = ""
+DB_NAME = "obd/gps-datenlogger"
+PATH = "/home/pi/Studienarbeit_OBD_Datenlogger/OBD-Logger/Files/"
+PATH_REPO = "/home/pi/Studienarbeit_OBD_Datenlogger/"
+DOWNLOAD_CARS_CSV = ""
+PATH_CARS_CSV = r""
