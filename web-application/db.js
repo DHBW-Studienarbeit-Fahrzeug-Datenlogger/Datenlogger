@@ -1,4 +1,7 @@
+// Requires mysql
 var mysql = require('mysql')
+
+// Create mysql connection to the database
 var connection = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -7,7 +10,10 @@ var connection = mysql.createConnection({
   //in case of error: add socketPath of the db
 })
 
+// Establish the connection
 connection.connect();
+
+
 
 // test the connection
 connection.query('SELECT 1 + 1 AS solution', function (error, results, fields) {
