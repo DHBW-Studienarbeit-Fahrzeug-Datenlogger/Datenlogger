@@ -1,3 +1,31 @@
+/*
+Created by: Dennis Deckert, Pascal Hirsekorn, Silas Mayer, Chris Papke
+
+Version: 1.0
+
+Description:
+    Module for the establishing of a connection to the MySQL database from
+    the env file.
+    Exports the connection object.
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 21.11.2020
+
+Version 1.0
+
+Description:
+    - Commentation of code
+    - Creation of header
+    - Basic structuring
+
+*/
+
+
+
+
 // Requires mysql
 var mysql = require('mysql')
 

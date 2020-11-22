@@ -1,4 +1,32 @@
-var os = require( 'os' );
+/*
+Created by: Dennis Deckert, Pascal Hirsekorn, Silas Mayer, Chris Papke
+
+Version: 1.0
+
+Description:
+    Function to get the local IP.
+    Exports the function to get the local IP.
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 21.11.2020
+
+Version 1.0
+
+Description:
+    - Commentation of code
+    - Creation of header
+    - Basic structuring
+
+*/
+
+
+
+
+// Requirements
+var os = require('os');
 var interfaces = os.networkInterfaces();
 
 function getIP() {

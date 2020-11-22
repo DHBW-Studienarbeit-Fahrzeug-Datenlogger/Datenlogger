@@ -1,3 +1,33 @@
+/*
+Created by: Dennis Deckert, Pascal Hirsekorn, Silas Mayer, Chris Papke
+
+Version: 1.0
+
+Description:
+    Contains the email handler. Sends the user an email with a link to the 
+    requested page. THat can be to confirm the mail address, to reset the password
+    or a link to the homepage of the web application.
+    Exports the mailer function.
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 21.11.2020
+
+Version 1.0
+
+Description:
+    - Commentation of code
+    - Creation of header
+    - Basic structuring
+
+*/
+
+
+
+
+// Requirements
 var nodemailer = require('nodemailer');
 var jwt = require('jsonwebtoken');
 var getIP = require('./getIP.js');
@@ -12,7 +42,7 @@ function mailer(id, email, mode) {
         },
         // Second argument
         process.env.MAIL_SECRET,
-        // ^Third argument
+        // Third argument
     {
         expiresIn: '1d',
         },
@@ -32,7 +62,7 @@ function mailer(id, email, mode) {
         // Get the local IP
         var add = getIP();
         if (mode === "confirmation") {
-            // Create Page on localhost port 3000
+            // Create Page on localhost port 3000 to confirm the email
             const url = `http://${add}:3000/confirmation/${emailToken}`;
             var mailOptions = {
                 from: process.env.MAIL_NAME,
@@ -40,6 +70,7 @@ function mailer(id, email, mode) {
                 subject: 'Confirm your email!',
                 html: `Please click this link to confirm your email: <a href="${url}">${url}</a>`
             };
+        // Create Page on localhost port 3000 to reset the password
         } else if (mode === "resetpw") {
             const url = `http://${add}:3000/resetpw${emailToken}`;
             var mailOptions = {

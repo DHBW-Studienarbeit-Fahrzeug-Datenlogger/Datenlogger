@@ -1,3 +1,33 @@
+/*
+Created by: Dennis Deckert, Pascal Hirsekorn, Silas Mayer, Chris Papke
+
+Version: 1.0
+
+Description:
+    Contains the different routes of the web application. Defines the 
+    backend behavior of the application.
+    At the end of teh file there are some custom functions that are used in 
+    the program.
+    Exports the router object.
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 21.11.2020
+
+Version 1.0
+
+Description:
+    - Commentation of code
+    - Creation of header
+    - Basic structuring
+
+*/
+
+
+
+
 // REQUIREMENTS
 
 var express = require('express');

@@ -1,3 +1,31 @@
+/*
+Created by: Dennis Deckert, Pascal Hirsekorn, Silas Mayer, Chris Papke
+
+Version: 1.0
+
+Description:
+    Handles the basic building of the web application. Creates the instance of
+    express and configurates it.
+    Exports the application object.
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 21.11.2020
+
+Version 1.0
+
+Description:
+    - Commentation of code
+    - Creation of header
+    - Basic structuring
+
+*/
+
+
+
+
 // Requirements (modules)
 var express = require('express');
 var path = require('path');
@@ -20,8 +48,8 @@ var users = require('./routes/users');
 // Create app as instance of express --> The web application object
 var app = express();
 
-// Another module
-var testFunction = require('dotenv').config();         // needed to use process.env
+// Needed to use process.env
+var testFunction = require('dotenv').config();         
 console.log(testFunction);
 
 // Get the function getIP from own module getIP:
@@ -99,7 +127,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-// Use the own modules index and users???
+// Add the self defined midleware to the express middleware stack --> defines the nadlers for the routes
 app.use('/', index);
 app.use('/users', users);
 
