@@ -41,12 +41,17 @@ cursor.execute("SHOW TABLES")
 tables = cursor.fetchall()
 
 
-### Get all tables and print the name of the tables as well as their description
+### Get all tables and print the name of the tables as well as their description and items
 for (table, ) in tables:
-    print(table + ":\n")
+    print(table + ":")
+    print("\nDescription:")
     cursor.execute("DESCRIBE " + table)
     for column in cursor:
         print(column)
+    print("\nItems:")
+    cursor.execute("SELECT * FROM "+table)
+    for item in cursor:
+        print(item)
     print("\n\n")
     
 
