@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Date: 24.11.2020
+Date: 27.11.2020
 
 Created by: Tim Hager
 
 Description:
-    Prints the name of the tables, their description and the contained items
-    in the terminal.
-    Used to get the information about the established database.
+    Appends a new column to the table data for the json file with the 
+    additional calculated signals.
 """
 
 ### Imports 
@@ -38,23 +37,9 @@ except:
 
 # Create execution object
 cursor = db.cursor()
-cursor.execute("SHOW TABLES")
-tables = cursor.fetchall()
 
-
-### Get all tables and print the name of the tables as well as their description and items
-for (table, ) in tables:
-    print(table + ":")
-    print("\nDescription:")
-    cursor.execute("DESCRIBE " + table)
-    for column in cursor:
-        print(column)
-    print("\nItems:")
-    cursor.execute("SELECT * FROM "+table)
-    for item in cursor:
-        print(item)
-    print("\n\n")
-    
+### Append column additional_file to table data
+cursor.execute("ALTER TABLE data ADD additional_file VARCHAR(180) NULL DEFAULT NULL")
 
 
 ### Close the connection
