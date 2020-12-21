@@ -21,6 +21,26 @@ Description:
     - Creation of header
     - Basic structuring   
     
+-------------------------------------------------------------------------------
+
+Update by: Maximilian Vogt
+
+Date: 21.12.2020
+
+Version 1.1
+
+Description:
+    - Syntax error corrections
+    - new import height_profile module (contains everything needed to build a height profile)
+    - new objects in LogFile class
+        1) self.height_profile_dict = None
+        2) self._filename_height_profile = ""
+    - adding height profile calculation to loadFromFile
+        1) build json with calculated data
+        2) filepath is saved in self._filename_height_profile
+    - adding filename_height_profile to StringBuilder
+    - changing transmitToSQL call
+    - adding filename_height_profile to transmitToSQL
 """
 
 
@@ -41,6 +61,7 @@ from datetime import datetime, timedelta
 from Util import Util
 from statistics import mean
 from Signals import signals
+import height_profile
 
 
 # Fuer Raspberry bzw. Linux --> + "/Files/" Bei Windows: "\\OBD-Logger\\Files\\"
@@ -54,7 +75,6 @@ path = env.PATH
 #path = "/home/pi/Studienarbeit_OBD_Datenlogger/OBD-Logger/Files/"
 
 
-
 class LogStatus:
     """
     Defines the Log status flags 
@@ -64,8 +84,6 @@ class LogStatus:
     LOG_CREATED = "LogFile created"
     LOG_FILE_LOADED = "LogFile loaded from File"
     
-    
-    
 
 class Stringbuilder:
     """
@@ -73,23 +91,22 @@ class Stringbuilder:
     """
     
     @staticmethod
-    def SqlAddEntry(filename, date, starttime, totalKM, endtime, VIN, fuelConsumption, energyConsumption, endLat, endLong, endDate):
+    def SqlAddEntry(filename_raw_data, date, starttime, totalKM, endtime, VIN, fuelConsumption, energyConsumption, endLat, endLong, endDate, filename_height_profile):
         """
         Create query string to load new file to db
-        SqlAddEntry(filename, date, starttime, totalKM, endtime, VIN, fuelConsumption, energyConsumption, endLat, endLong, endDate)
+        SqlAddEntry(filename, date, starttime, totalKM, endtime, VIN, fuelConsumption, energyConsumption, endLat, endLong, endDate, filename_height_profile)
         date: MM-DD-YYYY
         time: HH:MM:SS
         """
         
-        sql = "INSERT INTO  data ( filename, date, starttime, totalKM, endtime," \
-            + " VIN, fuelConsumption, energyConsumption, endLat, endLong, endDate ) VALUES ('" + str(filename) \
-            + "', '" + str(date) + "', '" + str(starttime) + "', '" + str(totalKM) + "', '" + str(endtime) \
-            +"', '" + str(VIN) + "', '" + str(fuelConsumption) +"', '" + str(energyConsumption) + "', '" + str(endLat) \
-            +"', '" + str(endLong) + "', '" + str(endDate) +  "')"
+        sql = "INSERT INTO  data ( filename_raw_data, date, starttime, totalKM, endtime, VIN, fuelConsumption, " \
+            + "energyConsumption, endLat, endLong, endDate, filename_height_profile) VALUES ('" + str(filename_raw_data) \
+            + "', '" + str(date) + "', '" + str(starttime) \
+            + "', '" + str(totalKM) + "', '" + str(endtime) + "', '" + str(VIN) + "', '" + str(fuelConsumption) \
+            +"', '" + str(energyConsumption) + "', '" + str(endLat) + "', '" + str(endLong) \
+            + "', '" + str(endDate) + "', '" + str(filename_height_profile) + "')"
 
         return sql
-
-
 
 
 class LogFile:
@@ -104,7 +121,6 @@ class LogFile:
         path (defined at the beginning of the file).
         """
         return sorted([f for f in os.listdir(path) if f.endswith('.csv')])
-
 
     @staticmethod
     def parseVIN(res):
@@ -127,7 +143,6 @@ class LogFile:
         
         return VIN
 
-
     def __init__(self):
         """
         Constructor:
@@ -136,7 +151,7 @@ class LogFile:
                 and a yet empty list as value.
                 Set status to NO_LOGFILE.
         """
-        self._filename = ""
+        self._filename_raw_data = ""
         self._VIN = ""
         
         # Create dictionary of signals
@@ -152,6 +167,9 @@ class LogFile:
         # File is not broken yet
         self._isBrokenFile = False
 
+        # height profile
+        self.height_profile_dict = None
+        self._filename_height_profile = ""
 
     def status(self):
         """
@@ -159,20 +177,17 @@ class LogFile:
         """
         return self._status
 
-
     def isBrokenFile(self):
         """
         Returns if the file is broken (attribut _isBrokenFile).
         """
         return self._isBrokenFile
 
-
     def getDataDict(self):
         """
         Returns dictionary of the signals.
         """
         return self._data
-
 
     def transferToJson(self):
         """
@@ -193,14 +208,13 @@ class LogFile:
         # Create path to the JSON directory
         jsonPath = path + "JSON/"
         # Get the file name of the CSV file
-        filename = self._filename
+        filename = self._filename_raw_data
         # Create a JSON file with the same file name and write the dictionary
         # as a JSON object to the file
         with open( jsonPath + filename.split(".csv")[0] + ".json", 'w') as fp:
             json.dump(data, fp)
         
-        return filename.split(".csv")[0] + ".json"    
-
+        return filename.split(".csv")[0] + ".json"
 
     def copyFileToServer(self, filename):
         """
@@ -217,8 +231,8 @@ class LogFile:
         # Read the last connected IP address from the file ipAddress.ip
         f = open(env.PATH_REPO + "ipAddress.ip", "r")
         ipAddress = f.read()
-        
-        ### Try saved IP address
+
+        # Try saved IP address
         
         # If there is an IP in the file, scan port 22 for IPs
         if(not ipAddress == ""):
@@ -230,7 +244,7 @@ class LogFile:
             if(stri.find("open") != -1):
                 ip.append(str(ipAddress))
                 
-        ### Scan for possible IP addresses
+        # Scan for possible IP addresses
                 
         # If no IP in file, create a new socket
         else:
@@ -256,7 +270,7 @@ class LogFile:
                     ip.append(output[i-3].split(' ')[-1].replace("(", "").replace(")",""))
                     print(ip)
         
-        ### Try connecting to server
+        # Try connecting to server
         
         # If there is at least one IP stored in the list, execute the following
         if(len(ip) >= 1):        
@@ -276,7 +290,9 @@ class LogFile:
                     # Try to transmit the data to the database. If successful
                     # write the used IP to the file ipAddress.ip
                     try:
-                        self.transmitToSQL(filename, str(ip[i]))
+                        self.transmitToSQL(filename_raw_data=filename,
+                                           ip=str(ip[i]),
+                                           filename_height_profile=self._filename_height_profile)
                         f = open(env.PATH_REPO + "ipAddress.ip", "w")
                         f.write(str(ip[i]))
                     # If connection error to the MySql, return the error
@@ -290,13 +306,12 @@ class LogFile:
                     if(len(ip)-1  == i):
                         return False, ""
                     
-        ### Connection not possible
+        # Connection not possible
         
         # If no IP in the list, return negative statement (no server connection)
         else:
             return False, "No Server connection found!"
-                    
-        
+
     def createLogfile(self, filename):
         """
         Create a logfile (CSV) to track the signal data.
@@ -317,9 +332,8 @@ class LogFile:
             print("Error! Creating File failed")
 
         # Set the file name as attribut and change the status to LOG_CREATED
-        self._filename = filename
+        self._filename_raw_data = filename
         self._status = LogStatus.LOG_CREATED
-
 
     def addData(self, signalList):
         """
@@ -337,11 +351,10 @@ class LogFile:
                 # If it is another signal, append its float value, rounded in
                 # consideration of the signals defined round digit
                 else:
-                    self._data[s.name].append(round(float(signalList[i]),s.roundDigit))
+                    self._data[s.name].append(round(float(signalList[i]), s.roundDigit))
         # If the signals list has the wrong size, raise an error
         else:
             raise ValueError("Error: signalList has to have the same shape as signals.getSignalList()")
-
 
     def getLabelData(self, labelName):
         """
@@ -355,7 +368,6 @@ class LogFile:
             raise ValueError("Not allowed! You have to loadFromFile first")
         # Return the signals data by its name
         return self._data[labelName]
-
 
     def getTime(self):
         """ 
@@ -381,13 +393,11 @@ class LogFile:
         # Return the filled list
         return tList
 
-
     def getfilename(self):
         """
         Returns the current file name used for the CSV and JSON file.
         """
-        return self._filename
-    
+        return self._filename_raw_data
 
     def appendFile(self):
         """
@@ -402,7 +412,7 @@ class LogFile:
 
         try:
             # Open the CSV file for appending new lines
-            with open(path+self._filename, 'a', newline='') as file:
+            with open(path+self._filename_raw_data, 'a', newline='') as file:
                 # Create a CSV writer without automatic data convertion
                 wr = csv.writer(
                     file, quoting=csv.QUOTE_MINIMAL, quotechar='"')
@@ -427,21 +437,21 @@ class LogFile:
         for s in signals.getSignalList():
             self._data[s.name] = []
 
-
     def loadFromFile(self, filename):
         """
         Load the data from the CSV file to the dictioary of signals. The
         dictionary will contain the signals data of the whole measurement.
         
         Called at the end of a measurement.
+
+        Analysis of height profile
         """
-        
-        ### Load file to buffer
+        # Load file to buffer
         try:
             # Create a list for the columns of data. One column matches one signal
             columns = []
             
-            ### Read CSV
+            # Read CSV
             
             # Open the CSV file for reading
             with open(env.PATH + filename, 'r') as f:
@@ -513,11 +523,14 @@ class LogFile:
             raise FileNotFoundError("Error: Loading File failed!" + str(e))
             
         # Set the file name as attribut and the status to LOG_FILE_LOADED
-        self._filename = filename
+        self._filename_raw_data = filename
+
         self._status = LogStatus.LOG_FILE_LOADED
 
+        # adding data analysis
+        self.height_profile_dict, self._filename_height_profile = height_profile.build_height_profile(env.PATH + filename, verbose=1)
 
-    def transmitToSQL(self, filename, ip):
+    def transmitToSQL(self, filename_raw_data, ip, filename_height_profile):
         """
         Connects to SQL server and transmits all data stored in the LogFile 
         object.
@@ -535,7 +548,7 @@ class LogFile:
         
         ### Get & calculate data
         
-        # Get the start and end time of the measurment and split them by ";"
+        # Get the start and end time of the measurement and split them by ";"
         dateTimeStart = self.getStartTime().split(";")
         dateTimeEnd = self.getEndTime().split(";")
 
@@ -565,7 +578,7 @@ class LogFile:
         # Create a cursor to interact with the database
         cursor = db.cursor()   
         # Store the data in the database (therefore create the data transfer string)                
-        cursor.execute(Stringbuilder.SqlAddEntry(filename, date, starttime, totalKM, endtime, VIN, fuelConsumption, energyConsumption, endLat, endLong, endDate))
+        cursor.execute(Stringbuilder.SqlAddEntry(filename_raw_data, filename_height_profile, date, starttime, totalKM, endtime, VIN, fuelConsumption, energyConsumption, endLat, endLong, endDate))
         
         # Commit the execution (necessary so that the data is actually stored)
         db.commit()
@@ -574,7 +587,6 @@ class LogFile:
         
         # Disconnect from the SQL server
         db.close()
-
 
     def getAverageData(self, signalStr):
         """
@@ -598,7 +610,6 @@ class LogFile:
         L = [x for x in L if x is not None]
         # Return the mean of the values in the list
         return mean(L)
-
 
     def getFuelConsumption(self):
         """
@@ -633,7 +644,6 @@ class LogFile:
         print("Normal: " + str(avfuelCon))
 
         return avfuelCon
-
 
     def getHashedVIN(self):
         """
@@ -697,7 +707,6 @@ class LogFile:
         # the efficiency of the electric engine)
         return (sum(energy)/0.85)
 
-
     def getStartTime(self):
         """
         Returns a datetime of the real start of data logging.
@@ -741,7 +750,6 @@ class LogFile:
         
         # Return the datetime as a formatted string
         return d.strftime("%m-%d-%Y;%H:%M:%S")
-
 
     def getEndTime(self):
         """
@@ -790,7 +798,6 @@ class LogFile:
         
         # Return the calculated datetime as formatted string
         return d.strftime("%m-%d-%Y;%H:%M:%S")
-
 
     def getDistance(self):
         """
