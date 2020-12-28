@@ -153,7 +153,12 @@ def build_height_profile(path="/home/pi/Studienarbeit_OBD_Datenlogger/OBD-Logger
         dy = gps_alt_list[i + 1] - gps_alt_list[i]
 
         # [gradient] = 1
-        gradient = dy / dx
+        # prevent div 0 errors
+        if dx <= 0:
+            gradient = 0
+        else:
+            gradient = dy / dx
+            
         gradient_array[i] = gradient
         normalized_gradient_array[i] = normalize(value=gradient, maximum=0.2)
         gps_alt_list[i+1] = gps_alt_list[i] + normalized_gradient_array[i] * dx
