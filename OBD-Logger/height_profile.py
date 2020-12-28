@@ -131,7 +131,7 @@ def build_height_profile(path="/home/pi/Studienarbeit_OBD_Datenlogger/OBD-Logger
         # delta 1 degree long = cos(angle lat) * d_earth * pi / 360
         long_degree_m = 1000 * np.cos(gps_lat_list[i] * np.pi / 180) * 12742 * np.pi / 360
 
-        # delta 1° lat = 111.13 km
+        # delta 1 degree lat = 111.13 km
         lat_degree_m = 111130
 
         gps_long_list[i] = gps_long_list[i] * long_degree_m
