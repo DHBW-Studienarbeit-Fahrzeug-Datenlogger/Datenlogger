@@ -128,7 +128,7 @@ def build_height_profile(path="/home/pi/Studienarbeit_OBD_Datenlogger/OBD-Logger
 
     # calculate Position in km from gps coordinates
     for i in range(array_size):
-        # delta 1° long = cos(angle lat) * d_earth * pi / 360
+        # delta 1 degree long = cos(angle lat) * d_earth * pi / 360
         long_degree_m = 1000 * np.cos(gps_lat_list[i] * np.pi / 180) * 12742 * np.pi / 360
 
         # delta 1° lat = 111.13 km
