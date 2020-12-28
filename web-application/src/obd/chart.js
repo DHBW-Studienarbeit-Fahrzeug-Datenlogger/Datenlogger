@@ -5,9 +5,26 @@ var getData = async function(filename, name) {
     });
     let allData = await response.json();
 
+
+
+    // Send a request to get the additional data
+    var filenameAdd = filename.slice(0, -5) + "_height_profile.json"
+    console.log("Filename for height profile: " + filenameAdd)
+
+    let response = await fetch("/getAddData/" + filenameAdd, {
+        credentials: 'same-origin'
+    });
+    let addData = await response.json();
+
+
     var time = allData.TIME;
     var speed = allData.SPEED;
-    var rpm = allData.RPM;/*
+    var rpm = allData.RPM;
+
+    // USE THE RIGHT VARIABLE NAMES
+    var timeAdd = addData.time;
+    var height = addData.gradient;
+    /*
     var engine_load = [];
     var maf = [];
     var temperature = [];
@@ -15,6 +32,7 @@ var getData = async function(filename, name) {
     var afr = [];
     var fuel_level = [];*/
     var data = [time, speed, rpm/*, engine_load, maf, temperature, pedal, afr, fuel_level*/];
+    var dataAdditional = [time_add, height];
 
     // Sources: https://plot.ly/javascript/configuration-options
     //          https://community.plot.ly/t/remove-options-from-the-hover-toolbar/130/11 
@@ -35,6 +53,15 @@ var getData = async function(filename, name) {
         x: data[0],
         y: data[2],
         line: {color: '#1f77b4'}
+    }
+
+    var heightTrace = {
+        type: "scatter",
+        mode: "lines",
+        name: 'Height profile',
+        x: dataAdditional[0],
+        y: dataAdditional[1],
+        line: { color: '#7F7F7F' }
     }
     
     var data = [speedTrace, rpmTrace];
@@ -65,11 +92,29 @@ var getData = async function(filename, name) {
             showgrid: false
         }
     };
+
+    var layoutAdditional = {
+        title: name + " height profile",
+        xaxis:
+        {
+            //domain: [0.25, 1],
+            showgrid: false
+        },
+        yaxis:
+        {
+            title: 'Height profile',
+            titlefont: { color: '#1f77b4' },
+            tickfont: { color: '#1f77b4' },
+            showgrid: false
+        }
+    };
     config = {
         'modeBarButtonsToRemove': ['sendDataToCloud', 'hoverClosestCartesian', 'toggleSpikelines', 'resetScale2d', 'hoverCompareCartesian'],
         'displayModeBar': true,
         'displaylogo': false,
         'responsive': true
     }
+    // IF NOT WORKING, CREATE SUBPLOTS
     Plotly.newPlot(name, data, layout, config);
+    Plotly.newPlot(name + " height profile", [heightTrace], layoutAdditional, config)
 }

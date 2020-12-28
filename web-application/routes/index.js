@@ -118,6 +118,19 @@ router.get('/getOBD/:token', authenticationMiddleware(), function(req, res) {
 
 
 
+// GET the additional data of the given filename
+router.get('/getAddData/:token', authenticationMiddleware(), function (req, res) {
+    // Get the JSON file with the specified filename
+    var address = '../../datafiles/' + req.params.token;
+    // Parse the JSON file as the JSON object data
+    var data = JSON.parse(fs.readFileSync(address, 'utf8'));
+
+    // Send the http response as the JSON object
+    res.send(data);
+});
+
+
+
 // GET the gps data of the given filename
 router.get('/getGPS/:token', authenticationMiddleware(), function (req, res) {
     // Get the JSON file with the specified filename
