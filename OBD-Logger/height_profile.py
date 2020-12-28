@@ -145,7 +145,7 @@ def build_height_profile(path="/home/pi/Studienarbeit_OBD_Datenlogger/OBD-Logger
 
     # calculating gradient from GPS data
     for i in range(array_size - 1):
-        # dx = sqrt(delta_lat² + delta_long²)
+        # dx = sqrt(delta_lat^2 + delta_long^2)
         # [dx] = m
         dx = np.sqrt(((gps_long_list[i] - gps_long_list[i + 1]) ** 2) + ((gps_lat_list[i] - gps_lat_list[i + 1]) ** 2))
 
