@@ -156,7 +156,7 @@ def build_height_profile(path="/home/pi/Studienarbeit_OBD_Datenlogger/OBD-Logger
         gradient = dy / dx
         gradient_array[i] = gradient
         normalized_gradient_array[i] = normalize(value=gradient, maximum=0.2)
-        gps_alt_list[i+1] = gps_alt_list[1] + normalized_gradient_array[i] * dx
+        gps_alt_list[i+1] = gps_alt_list[i] + normalized_gradient_array[i] * dx
 
         angle_deg_array[i] = angle_from_gradient(normalized_gradient_array[i], in_rad=False)
         angle_rad_array[i] = angle_from_gradient(normalized_gradient_array[i], in_rad=True)
