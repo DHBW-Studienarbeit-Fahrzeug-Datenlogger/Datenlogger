@@ -46,13 +46,7 @@ except:
 cursor = db.cursor()
 
 
-### Rename the csvx files to csv
-for file in glob.glob(DIRECTORY + "/*.csvx"):
-    new_name = file[:-1]
-    os.rename(file, new_name)
-
-
-### For every JSON-file in the directory
+### For every CSV-file in the directory
 for file in glob.glob(DIRECTORY + "/*.csv"):
     print(file)
     
