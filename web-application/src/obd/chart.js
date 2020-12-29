@@ -22,8 +22,8 @@ var getData = async function(filename, name) {
     var rpm = allData.RPM;
 
     // USE THE RIGHT VARIABLE NAMES
-    var timeAdd = addData.time;
-    var height = addData.gradient;
+    var timeAdd = allData.TIME;
+    var height = addData.gps_alt;
     /*
     var engine_load = [];
     var maf = [];

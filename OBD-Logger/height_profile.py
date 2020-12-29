@@ -284,9 +284,10 @@ def print_debug(to_print, verbose=1):
 
 
 if __name__ == '__main__':
-    # windows debugging path
-    path = r"C:\Users\Max\Documents\_5.Semester\Studienarbeit\test.csv"
+    pass
+    # # windows debugging path
+    path = r""
 
-    # pi path
-    # path = "/home/pi/Studienarbeit_OBD_Datenlogger/OBD-Logger/"
-    height_profile = build_height_profile(path, verbose=0)
+    # # pi path
+    # # path = "/home/pi/Studienarbeit_OBD_Datenlogger/OBD-Logger/"
+    # height_profile = build_height_profile(path, verbose=0)
