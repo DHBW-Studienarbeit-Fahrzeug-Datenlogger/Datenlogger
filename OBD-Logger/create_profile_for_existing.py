@@ -13,11 +13,12 @@ Description:
 import mysql.connector as mysql_connector
 import _env
 import glob
+import os
 import height_profile as hp
 
 
 ### Constants
-DIRECTORY = r""
+DIRECTORY = r"/home/pi/datafiles"
 
 
 ### Create connection with database
@@ -45,16 +46,27 @@ except:
 cursor = db.cursor()
 
 
+### Rename the csvx files to csv
+for file in glob.glob(DIRECTORY + "/*.csvx"):
+    new_name = file[:-1]
+    os.rename(file, new_name)
+
+
 ### For every JSON-file in the directory
-for file in glob.glob("*.json"):
-    # Only if the JSON-file is not a height profile file
-    if not file.endswith("height_profile.json"):
-        hp.build_height_profile(file, 0)
-        add_file = file[:-5] + "_height_profile.json"
-        
-        # Execute the command to add the file name for the additional data to the database
-        cursor.execute("UPDATE data SET additional_file = %s WHERE filename = %s", (add_file, file))
-        db.commit()
+for file in glob.glob(DIRECTORY + "/*.csv"):
+    print(file)
+    
+    # Create height profile
+    hp.build_height_profile(file, 0)
+    
+    # File name for additional data
+    add_file = file[:-4] + "_height_profile.json"
+    # File name for data that is already in the database
+    filename = file[:-4] + ".json"
+    
+    # Execute the command to add the file name for the additional data to the database
+    cursor.execute("UPDATE data SET additional_file = %s WHERE filename = %s", (add_file, file))
+    db.commit()
 
 
 ### Close the connection
