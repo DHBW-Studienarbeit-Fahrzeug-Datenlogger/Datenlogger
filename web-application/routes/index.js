@@ -103,7 +103,8 @@ router.get('/getCars/:token', authenticationMiddleware(), function (req, res) {
 
 
 // GET the obd data of the given filename
-router.get('/getOBD/:token', authenticationMiddleware(), function(req, res) {
+router.get('/getOBD/:token', authenticationMiddleware(), function (req, res) {
+    console.log("/getOBD/");
     // Get the JSON file with the specified filename
     var address = '../../datafiles/' + req.params.token;
     // Parse the JSON file as the JSON object data
@@ -120,6 +121,7 @@ router.get('/getOBD/:token', authenticationMiddleware(), function(req, res) {
 
 // GET the additional data of the given filename
 router.get('/getAddData/:token', authenticationMiddleware(), function (req, res) {
+    console.log("/getAddData/");
     // Get the JSON file with the specified filename
     var address = '../../datafiles/' + req.params.token;
     // Parse the JSON file as the JSON object data

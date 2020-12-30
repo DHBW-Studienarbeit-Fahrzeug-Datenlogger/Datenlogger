@@ -62,6 +62,7 @@ var update = async function() {
     for(var h = 1; h <= nof; h++) {
         console.log("Filename: " + fn[h-1])
         $("#charts").append("<div id='Fahrt " + h + "'></div>")
+        $("#charts").append("<div id='Fahrt " + h + " height profile" + "'></div>")
         getData(fn[h-1], "Fahrt " + h);
     }
     $(function() {
@@ -81,6 +82,7 @@ var update = async function() {
                         filenames.push($(".filename:eq(" + g + ")").attr('filename'));
                         nof++;
                         $("#charts").append("<div id='Fahrt " + (g + 1) + "'></div>")
+                        $("#charts").append("<div id='Fahrt " + (g + 1) + " height profile" + "'></div>")
                         getData($(".filename:eq(" + g + ")").attr('filename'), "Fahrt " + (g + 1));
                     }
                 }

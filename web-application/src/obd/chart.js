@@ -11,10 +11,10 @@ var getData = async function(filename, name) {
     var filenameAdd = filename.slice(0, -5) + "_height_profile.json"
     console.log("Filename for height profile: " + filenameAdd)
 
-    let response = await fetch("/getAddData/" + filenameAdd, {
+    let response2 = await fetch("/getAddData/" + filenameAdd, {
         credentials: 'same-origin'
     });
-    let addData = await response.json();
+    let addData = await response2.json();
 
 
     var time = allData.TIME;
@@ -32,7 +32,7 @@ var getData = async function(filename, name) {
     var afr = [];
     var fuel_level = [];*/
     var data = [time, speed, rpm/*, engine_load, maf, temperature, pedal, afr, fuel_level*/];
-    var dataAdditional = [time_add, height];
+    var dataAdditional = [timeAdd, height];
 
     // Sources: https://plot.ly/javascript/configuration-options
     //          https://community.plot.ly/t/remove-options-from-the-hover-toolbar/130/11 
