@@ -6,6 +6,16 @@ Version: 1.0
 
 Description:
     Script, that gets checks all available OBD2 Signals
+-------------------------------------------------------------------
+Update by: Max Vogt
+
+Date: 30.12.2020
+
+Version 1.1
+
+Description:
+    - adding more signals to be checks
+    - bugfixes
 
 """
 
@@ -56,7 +66,7 @@ def main(path):
             if (connection.status() == obd.utils.OBDStatus.CAR_CONNECTED and (
                     connection.query(obd.commands.RPM).is_null() == False)):
                 not_connected = False
-                print("Successful connected to OBDII!")  # Connecting to OBD dongle succeeded
+                print("Successfully connected to OBDII!")  # Connecting to OBD dongle succeeded
 
                 time.sleep(1)
             # Connection not successful: Sleep 1s before trying to connect to OBD dongle again
@@ -77,15 +87,26 @@ def main(path):
 
     if connection.status() == obd.utils.OBDStatus.CAR_CONNECTED and has_connection:
         # Create an OBD command to get Signal Information
-        get_pid01 = OBDCommand("PID01", "Get supported PIDs Service 1 (current data)", b"0100", 4, raw_string)
+        get_pid01_1 = OBDCommand("PID01_1", "Get supported PIDs Service 1 (current data) 1-20", b"0100", 4, raw_string)
+        get_pid01_2 = OBDCommand("PID01_2", "Get supported PIDs Service 1 (current data) 21-40", b"0120", 4, raw_string)
+        get_pid01_3 = OBDCommand("PID01_3", "Get supported PIDs Service 1 (current data) 41-60", b"0140", 4, raw_string)
+        get_pid01_4 = OBDCommand("PID01_4", "Get supported PIDs Service 1 (current data) 61-80", b"0160", 4, raw_string)
+        get_pid01_5 = OBDCommand("PID01_5", "Get supported PIDs Service 1 (current data) 81-A0", b"0180", 4, raw_string)
+        get_pid01_6 = OBDCommand("PID01_6", "Get supported PIDs Service 1 (current data) A1-C0", b"01A0", 4, raw_string)
         get_pid09 = OBDCommand("PID09", "Get supported PIDs Service 9 (vehicle information)", b"0900", 4, raw_string)
+
         # Send the command to the OBD and accept the response
-        pid01 = connection.query(get_pid01, force=True)
+        pid01_1 = connection.query(get_pid01_1, force=True)
+        pid01_2 = connection.query(get_pid01_2, force=True)
+        pid01_3 = connection.query(get_pid01_3, force=True)
+        pid01_4 = connection.query(get_pid01_4, force=True)
+        pid01_5 = connection.query(get_pid01_5, force=True)
+        pid01_6 = connection.query(get_pid01_6, force=True)
         pid09 = connection.query(get_pid09, force=True)
 
         f = open(path+filename, "w+")
-        f.write("Available signals for gathering current data:\n {} \n}\n".format(pid01))
-        f.write("Available signals for gathering vehicle information:\n {} \n}\n".format(pid09))
+        f.write("Available signals for gathering current data:\n1: {}\n2: {}\n3: {}\n4: {}\n5: {}\n6:{}\n\n".format(pid01_1, pid01_2, pid01_3, pid01_4, pid01_5, pid01_6))
+        f.write("Available signals for gathering vehicle information:\n {}\n\n".format(pid09))
         f.close()
     else:
         print("no connection, signals won't be tested!")
@@ -93,5 +114,5 @@ def main(path):
 
 # If script gets executed: execute main function
 if __name__ == "__main__":
-    path = "/home/pi/"
+    path = "/home/pi/Studienarbeit_OBD_Datenlogger/OBD-Logger/Files/"
     main(path)
