@@ -54,12 +54,12 @@ for file in glob.glob(DIRECTORY + "/*.csv"):
     hp.build_height_profile(file, 0)
     
     # File name for additional data
-    add_file = file[:-4] + "_height_profile.json"
+    add_file = os.path.basename(file)[:-4] + "_height_profile.json"
     # File name for data that is already in the database
-    filename = file[:-4] + ".json"
+    filename = os.path.basename(file)[:-4] + ".json"
     
     # Execute the command to add the file name for the additional data to the database
-    cursor.execute("UPDATE data SET additional_file = %s WHERE filename = %s", (add_file, file))
+    cursor.execute("UPDATE data SET additional_file = %s WHERE filename = %s", (add_file, filename))
     db.commit()
 
 
