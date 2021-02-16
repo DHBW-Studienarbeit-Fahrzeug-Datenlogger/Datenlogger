@@ -37,7 +37,7 @@ def getCSV_rows():
     row_list = []
     
     # Read the CSV file
-    with open(_env.PATH_CARS_CSV, newline='') as file:
+    with open(_env.PATH_CARS_CSV) as file:
         reader = csv.reader(file, delimiter=';', quotechar='|')
         for row in reader:
             row_list.append(row)
