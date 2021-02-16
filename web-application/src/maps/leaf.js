@@ -176,6 +176,29 @@ var printWaitingTime = async function() {
 }
 printWaitingTime();
 
+// Function to determine the color of the route points in map1
+var determine_color = function (data, position, radioValue) {
+    var point_color = 'blue';
+    // Select the color visualization depending on the radio button value
+    if (radioValue == 'speed')
+    {
+        if (data.SPEED[position] >= 0 && data.SPEED[position] <= 30) {
+            point_color = 'green';
+        }
+        else if (data.SPEED[position] > 30 && data.SPEED[position] <= 50) {
+            point_color = 'blue';
+        }
+        else if (data.SPEED[position] > 50 && data.SPEED[position] <= 100) {
+            point_color = 'rgb(255, 0, 255)';
+        }
+        else if (data.SPEED[position] > 100) {
+            point_color = 'red';
+        }
+    }
+
+    return point_color;
+}
+
 // Trip information map
 var map = L.map( 'map1', {
     center: [20.0, 5.0],
@@ -196,6 +219,16 @@ var printMarkers = async function(filename, nof) {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map);
 
+    
+    // Get value of the checked radio button
+    var radioButtons = document.getElementById('route_visualization');
+    var radioValue = 'none';
+    for (var i = 0; i < radioButtons.length; i++) {
+        if (radioButtons[i].checked == true) {
+            radioValue = radioButtons[i].value;
+        }
+    }
+
     if(nof === 0) {} else {
         var allMarkers = [];
         for(var g = 0; g < nof; g++) {
@@ -207,6 +240,12 @@ var printMarkers = async function(filename, nof) {
             });
             let markers = await response.json();
             //console.log("Test " + markers.GPS_Lat[0]);
+
+            // Get all obd data for the drive cycle
+            let response2 = await fetch("/getOBD/" + filename[g], {
+                credentials: 'same-origin'
+            });
+            let allData = await response2.json();
 
             markers = await removeNull(markers);
             allMarkers.push(markers)
@@ -223,17 +262,44 @@ var printMarkers = async function(filename, nof) {
                     .bindPopup( '<p>Start-Time' + markers[i].route_name + '</p>' )
                     .addTo( map );
 
-                if ((i + 1)  < markers.length) {
+                if ((i + 1) < markers.length) {
                     var latlngs = Array();
-                    latlngs.push({ 
+                    latlngs.push({
                         "lat": markers[i].lat,
                         "lng": markers[i].lng
                     });
-                    latlngs.push({ 
-                        "lat": markers[i+1].lat,
-                        "lng": markers[i+1].lng
+                    latlngs.push({
+                        "lat": markers[i + 1].lat,
+                        "lng": markers[i + 1].lng
                     });
-                    var polyline = L.polyline(latlngs, {color: 'blue'}).addTo(map);
+                    var point_color = await determine_color(allData, i, radioValue)
+                    var polyline = L.polyline(latlngs, { color: point_color }).addTo(map);
+                }
+                else {
+                    // Create legend for route visualization
+                    var legend = L.control({ position: 'bottomright' });
+                    // Adding the labels
+                    legend.onAdd = function (map) {
+                        // Create division for labels
+                        var div = L.DomUtil.create('div', 'route-coor-legend');
+                        // Arrays to organize the values
+                        labels = ['<strong>Route visualization</strong>'];
+                        categories = [];
+                        colors = []
+                        if (radioValue == 'speed') {
+                            categories.push(...['0-30 km/h', '30-50 km/h', '50-100 km/h', '>100 km/h']);
+                            colors.push(...['green', 'blue', 'rgb(255, 0, 255)', 'red']);
+                        }
+                        // Add the labels to the division
+                        for (var j = 0; j < categories.length; j++) {
+                            div.innerHTML += labels.push('<i class="circle" style="background:' + colors[j] + '"></i> ' + (categories[j] ? categories[j] : '+'));
+                        }
+                        // Linebreaks between the labels
+                        div.innerHTML = labels.join('<br>');
+                        return div
+                    };
+                    // Add legend to the map
+                    legend.addTo(map);
                 }
             }
         }
