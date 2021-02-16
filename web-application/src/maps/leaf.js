@@ -239,6 +239,7 @@ var printMarkers = async function(filename, nof) {
                 credentials: 'same-origin'
             });
             let markers = await response.json();
+	    var gpsData = markers;
             //console.log("Test " + markers.GPS_Lat[0]);
 
             // Get all obd data for the drive cycle
@@ -251,6 +252,8 @@ var printMarkers = async function(filename, nof) {
             allMarkers.push(markers)
             //console.log("Markeranzahl: " + markers.length)
 
+	    // Counter to handle empty GPS values for colored visualization
+	    var counter_gps = 0;
             for ( var i=0; i < markers.length; i++ ) 
             {
                 var tmp = 0;
@@ -272,8 +275,12 @@ var printMarkers = async function(filename, nof) {
                         "lat": markers[i + 1].lat,
                         "lng": markers[i + 1].lng
                     });
-                    var point_color = await determine_color(allData, i, radioValue)
+		    while(gpsData.GPS_Lat[counter_gps] === null || gpsData.GPS_Long[counter_gps] === null){
+			counter_gps = counter_gps + 1;
+		    }
+                    var point_color = await determine_color(allData, counter_gps, radioValue);
                     var polyline = L.polyline(latlngs, { color: point_color }).addTo(map);
+		    counter_gps = counter_gps + 1;
                 }
                 else if(radioValue != 'none' && g == 0){
                     // Create legend for route visualization
