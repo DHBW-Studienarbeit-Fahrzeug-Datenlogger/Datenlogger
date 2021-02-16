@@ -221,7 +221,7 @@ var printMarkers = async function(filename, nof) {
 
     
     // Get value of the checked radio button
-    var radioButtons = document.getElementById('route_visualization');
+    var radioButtons = document.getElementsByName('route_visualization');
     var radioValue = 'none';
     for (var i = 0; i < radioButtons.length; i++) {
         if (radioButtons[i].checked == true) {
@@ -275,7 +275,7 @@ var printMarkers = async function(filename, nof) {
                     var point_color = await determine_color(allData, i, radioValue)
                     var polyline = L.polyline(latlngs, { color: point_color }).addTo(map);
                 }
-                else {
+                else if(radioValue != 'none' && g == 0){
                     // Create legend for route visualization
                     var legend = L.control({ position: 'bottomright' });
                     // Adding the labels
@@ -288,11 +288,11 @@ var printMarkers = async function(filename, nof) {
                         colors = []
                         if (radioValue == 'speed') {
                             categories.push(...['0-30 km/h', '30-50 km/h', '50-100 km/h', '>100 km/h']);
-                            colors.push(...['green', 'blue', 'rgb(255, 0, 255)', 'red']);
+                            colors.push(...['#00ff00', '#0000ff', '#ff00ff', '#ff0000']);
                         }
                         // Add the labels to the division
                         for (var j = 0; j < categories.length; j++) {
-                            div.innerHTML += labels.push('<i class="circle" style="background:' + colors[j] + '"></i> ' + (categories[j] ? categories[j] : '+'));
+                            div.innerHTML += labels.push('<span style="background-color:' + colors[j] + '; border-radius: 50%; width: 10px; height: 10px; display: inline-block"></span> ' + (categories[j] ? categories[j] : '+'));
                         }
                         // Linebreaks between the labels
                         div.innerHTML = labels.join('<br>');
