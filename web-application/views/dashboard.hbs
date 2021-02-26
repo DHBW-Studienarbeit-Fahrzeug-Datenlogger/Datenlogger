@@ -55,23 +55,27 @@
                     <div class="map2-config">
                         <h4>Charging variation</h4>
                         <input type="radio" name="charging_variations" value="none" checked onchange="printWaitingTime()">None<br>
-                        <input type="radio" name="charging_variations" value="variation1" onchange="printWaitingTime()">Speed<br>
+                        <input type="radio" name="charging_variations" value="type1" onchange="printWaitingTime()">Type 1<br>
+                        <input type="radio" name="charging_variations" value="typ2" onchange="printWaitingTime()">Type 2<br>
+                        <input type="radio" name="charging_variations" value="ccscombo2" onchange="printWaitingTime()">CCS Combo 2<br>
+                        <input type="radio" name="charging_variations" value="chademo" onchange="printWaitingTime()">CHAdeMO<br>
+                        <input type="radio" name="charging_variations" value="teslasupercharger" onchange="printWaitingTime()">Tesla Supercharger<br>
                         <br />
                         <script>
                             function evalSlider() {
-				if(document.getElementById("sliderVal").value != document.getElementById("power_range").value) {
+                                if (document.getElementById("sliderVal").value != document.getElementById("power_range").value) {
                                     var sliderValue = document.getElementById("power_range").value;
                                     document.getElementById("sliderVal").innerHTML = sliderValue;
-				}
+                                }
                             }
                         </script>
                         Which power shall be charged:
                         <br />
-                        0
+                        0kWh
                         <input type="range" id="power_range" min="0" max="300" value="0" oninput="evalSlider()" />
-                        300
+                        300kWh
                         <br />
-                        <output id="sliderVal">0</output>
+                        <output id="sliderVal">0</output>kWh
                     </div>
                 </div>
             </div>

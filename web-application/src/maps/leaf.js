@@ -148,31 +148,100 @@ var printWaitingTime = async function() {
 
     //console.log(markers)
     //console.log(markers[0].gpsLong)
-    for(var i = 0; i < markers.length; i++) {
-        //console.log(markers[i].gpsLong)
-        //console.log(parseTime(markers[i].waitingTime))
-        if(markers[i].waitingTime < 1800000) {
-            customIcon = redIcon;
-        } else if (markers[i].waitingTime < 2 * 1800000 && markers[i].waitingTime > 1800000) {
-            customIcon = orangeIcon;
-        } else if (markers[i].waitingTime < 8 * 1800000 && markers[i].waitingTime > 2 * 1800000) {
-            customIcon = yellowIcon;
-        } else {
-            customIcon = greenIcon;
-        }
-        allMarkers.push({ 
-            "lat": markers[i].gpsLat,
-            "lng": markers[i].gpsLong
-        });
-        L.marker( [markers[i].gpsLat, markers[i].gpsLong], {icon: customIcon, opacity: 0.7})
-            .bindPopup( '<p>Waiting-Time: ' + parseTime(markers[i].waitingTime) + '</p>' )
-            .addTo( map2 );
 
+    // Get value of radiobuttons
+    var radioButtons = document.getElementsByName('charging_variations');
+    var radioValue = 'none';
+    for (var i = 0; i < radioButtons.length; i++) {
+        if (radioButtons[i].checked == true) {
+            radioValue = radioButtons[i].value;
+        }
     }
-    if(allMarkers.length != 0) {
-        var bounds = L.latLngBounds(allMarkers);
-        map2.fitBounds(bounds);
+
+    // Get value of slider
+    var sliderValue = document.getElementById("power_range").value;
+
+    // Dictionary containing the types of charging stations as keys and their power output as values
+    var charging_dict = {
+        "type1":5.8,
+        "type2":22,
+        "ccscombo2":50,
+        "chademo":36,
+        "teslasupercharger":135
     }
+
+    // Decide which markers to show (based on selection of radiobuttons and checkbox under map)
+    if (radioValue == "none") {
+        for (var i = 0; i < markers.length; i++) {
+            //console.log(markers[i].gpsLong)
+            //console.log(parseTime(markers[i].waitingTime))
+            if (markers[i].waitingTime < 1800000) {
+                customIcon = redIcon;
+            } else if (markers[i].waitingTime < 2 * 1800000 && markers[i].waitingTime > 1800000) {
+                customIcon = orangeIcon;
+            } else if (markers[i].waitingTime < 8 * 1800000 && markers[i].waitingTime > 2 * 1800000) {
+                customIcon = yellowIcon;
+            } else {
+                customIcon = greenIcon;
+            }
+            allMarkers.push({
+                "lat": markers[i].gpsLat,
+                "lng": markers[i].gpsLong
+            });
+            L.marker([markers[i].gpsLat, markers[i].gpsLong], { icon: customIcon, opacity: 0.7 })
+                .bindPopup('<p>Waiting-Time: ' + parseTime(markers[i].waitingTime) + '</p>')
+                .addTo(map2);
+
+        }
+        // Create legend for route visualization
+        var legend = L.control({ position: 'bottomright' });
+        // Adding the labels
+        legend.onAdd = function (map2) {
+            // Create division for labels
+            var div = L.DomUtil.create('div', 'route-coor-legend');
+            // Arrays to organize the values
+            labels = ['<strong>Color legend</strong>'];
+            categories = ['< 30min', '30min - 1h', '1h - 4h', '> 4h'];
+            colors = ['red', 'orange', 'yellow', 'green'];
+            // Add the labels to the division
+            for (var j = 0; j < categories.length; j++) {
+                div.innerHTML += labels.push('<span style="background-color:' + colors[j] + '; border-radius: 50%; width: 10px; height: 10px; display: inline-block"></span> ' + (categories[j] ? categories[j] : '+'));
+            }
+            // Linebreaks between the labels
+            div.innerHTML = labels.join('<br>');
+            return div
+        };
+        // Add legend to the map
+        legend.addTo(map2);
+
+        if (allMarkers.length != 0) {
+            var bounds = L.latLngBounds(allMarkers);
+            map2.fitBounds(bounds);
+        }
+    }
+    else{
+        for (var i = 0; i < markers.length; i++) {
+            // Show only locations matching the given criterias
+            if (charging_dict[radioValue] * (markers[i].waitingTime / 3600000) >= sliderValue) {
+                customIcon = greenIcon;
+                allMarkers.push({
+                    "lat": markers[i].gpsLat,
+                    "lng": markers[i].gpsLong
+                });
+
+                L.marker([markers[i].gpsLat, markers[i].gpsLong], { icon: customIcon, opacity: 0.7 })
+                    .bindPopup('<p>Waiting-Time: ' + parseTime(markers[i].waitingTime) + '</p>' + '<p>Charge: ' + charging_dict[radioValue] * (markers[i].waitingTime / 3600000) + 'kWh</p>')
+                    .addTo(map2);
+            }
+
+        }
+        if (allMarkers.length != 0) {
+            var bounds = L.latLngBounds(allMarkers);
+            map2.fitBounds(bounds);
+        }
+    }
+
+    
 }
 printWaitingTime();
 
