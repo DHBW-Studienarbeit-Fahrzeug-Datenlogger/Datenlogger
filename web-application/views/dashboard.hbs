@@ -59,17 +59,19 @@
                         <br />
                         <script>
                             function evalSlider() {
-                                var sliderValue = document.getElementById("power_range").value;
-                                document.getElementById("sliderVal").innerHTML = sliderValue;
+				if(document.getElementById("sliderVal").value != document.getElementById("power_range").value) {
+                                    var sliderValue = document.getElementById("power_range").value;
+                                    document.getElementById("sliderVal").innerHTML = sliderValue;
+				}
                             }
                         </script>
                         Which power shall be charged:
                         <br />
                         0
-                        <input type="range" id="power_range" min="0" max="300" onchange="evalSlider()" />
+                        <input type="range" id="power_range" min="0" max="300" value="0" oninput="evalSlider()" />
                         300
                         <br />
-                        <output id="sliderVal"></output>
+                        <output id="sliderVal">0</output>
                     </div>
                 </div>
             </div>
@@ -156,7 +158,7 @@
           </div>
         </div>
         <div id="secondPart" style="display: none">
-        <div style="margin-top: 500px;" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div style="margin-top: 650px;" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Trip Information</h1>
         </div>
         
