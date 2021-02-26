@@ -193,26 +193,29 @@ var printWaitingTime = async function() {
                 .addTo(map2);
 
         }
-        // Create legend for route visualization
-        var legend = L.control({ position: 'bottomright' });
-        // Adding the labels
-        legend.onAdd = function (map2) {
-            // Create division for labels
-            var div = L.DomUtil.create('div', 'route-coor-legend');
-            // Arrays to organize the values
-            labels = ['<strong>Color legend</strong>'];
-            categories = ['< 30min', '30min - 1h', '1h - 4h', '> 4h'];
-            colors = ['red', 'orange', 'yellow', 'green'];
-            // Add the labels to the division
-            for (var j = 0; j < categories.length; j++) {
-                div.innerHTML += labels.push('<span style="background-color:' + colors[j] + '; border-radius: 50%; width: 10px; height: 10px; display: inline-block"></span> ' + (categories[j] ? categories[j] : '+'));
-            }
-            // Linebreaks between the labels
-            div.innerHTML = labels.join('<br>');
-            return div
-        };
-        // Add legend to the map
-        legend.addTo(map2);
+        if (markers.length > 0) {
+            // Create legend for route visualization
+            var legend = L.control({ position: 'bottomright' });
+            // Adding the labels
+            legend.onAdd = function (map2) {
+                // Create division for labels
+                var div = L.DomUtil.create('div', 'route-coor-legend');
+                // Arrays to organize the values
+                labels = ['<strong>Color legend</strong>'];
+                categories = ['< 30min', '30min - 1h', '1h - 4h', '> 4h'];
+                colors = ['red', 'orange', 'yellow', 'green'];
+                // Add the labels to the division
+                for (var j = 0; j < categories.length; j++) {
+                    labels.push('<span style="background-color:' + colors[j] + '; border-radius: 50%; width: 10px; height: 10px; display: inline-block"></span> ' + (categories[j] ? categories[j] : '+'));
+                }
+                // Linebreaks between the labels
+                div.innerHTML = labels.join('<br>');
+                return div
+            };
+            // Add legend to the map
+            legend.addTo(map2);
+        }
+        
 
         if (allMarkers.length != 0) {
             var bounds = L.latLngBounds(allMarkers);
