@@ -56,8 +56,20 @@
                         <h4>Charging variation</h4>
                         <input type="radio" name="charging_variations" value="none" checked onchange="printWaitingTime()">None<br>
                         <input type="radio" name="charging_variations" value="variation1" onchange="printWaitingTime()">Speed<br>
-                        <br>
-                        <input type="checkbox" id="charging_checkbox" vlaue="0" onchange="printWaitingTime()">Show only positions suited for the selected variation<br>
+                        <br />
+                        <script>
+                            function evalSlider() {
+                                var sliderValue = document.getElementById("power_range").value;
+                                document.getElementById("sliderVal").innerHTML = sliderValue;
+                            }
+                        </script>
+                        Which power shall be charged:
+                        <br />
+                        0
+                        <input type="range" id="power_range" min="0" max="300" onchange="evalSlider()" />
+                        300
+                        <br />
+                        <output id="sliderVal"></output>
                     </div>
                 </div>
             </div>
