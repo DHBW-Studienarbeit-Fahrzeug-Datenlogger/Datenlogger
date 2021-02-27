@@ -54,12 +54,12 @@
                     <div id="map2" style="margin-top: 10px; height: 440px; border: 1px solid #AAA;"></div>
                     <div class="map2-config">
                         <h4>Charging variation</h4>
-                        <input type="radio" name="charging_variations" value="none" checked onchange="printWaitingTime()">None<br>
-                        <input type="radio" name="charging_variations" value="type1" onchange="printWaitingTime()">Type 1<br>
-                        <input type="radio" name="charging_variations" value="typ2" onchange="printWaitingTime()">Type 2<br>
-                        <input type="radio" name="charging_variations" value="ccscombo2" onchange="printWaitingTime()">CCS Combo 2<br>
-                        <input type="radio" name="charging_variations" value="chademo" onchange="printWaitingTime()">CHAdeMO<br>
-                        <input type="radio" name="charging_variations" value="teslasupercharger" onchange="printWaitingTime()">Tesla Supercharger<br>
+                        <input type="radio" name="charging_variations" value="none">None<br>
+                        <input type="radio" name="charging_variations" value="type1">Type 1<br>
+                        <input type="radio" name="charging_variations" value="typ2">Type 2<br>
+                        <input type="radio" name="charging_variations" value="ccscombo2">CCS Combo 2<br>
+                        <input type="radio" name="charging_variations" value="chademo">CHAdeMO<br>
+                        <input type="radio" name="charging_variations" value="teslasupercharger">Tesla Supercharger<br>
                         <br />
                         <script>
                             function evalSlider() {
@@ -75,7 +75,9 @@
                         <input type="range" id="power_range" min="0" max="300" value="0" oninput="evalSlider()" />
                         300kWh
                         <br />
-                        <output id="sliderVal">0</output>kWh
+                        <output id="sliderVal" style="margin-left: 100px">0</output>kWh
+                        <br />
+                        <button type="button" onclick="printWaitingTime()">Submit</button>
                     </div>
                 </div>
             </div>
@@ -162,7 +164,7 @@
           </div>
         </div>
         <div id="secondPart" style="display: none">
-        <div style="margin-top: 800px;" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <div style="margin-top: 850px;" class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
           <h1 class="h2">Trip Information</h1>
         </div>
         
