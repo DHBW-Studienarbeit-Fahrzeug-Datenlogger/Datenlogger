@@ -261,7 +261,7 @@ router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), funct
     // Establish connection to database
     var db = require('../db.js');
     // Get some driving cycle data 
-    db.query('SELECT date, starttime, endtime, endLat, endLong, endDate, vin FROM data', function(err, results, fields) {
+    db.query('SELECT date, starttime, endtime, endLat, endLong, endDate, vin, totalKM, energyConsumption, filename FROM data', function(err, results, fields) {
         // If error occures, throw it
         if (err) throw err;
         // Define array tmp
@@ -365,7 +365,7 @@ router.get('/getTrips/:date/:selector/:value', authenticationMiddleware(), funct
     // Establish connection to database
     var db = require('../db.js');
     // Get some driving cycle data from the cycles of the specified date
-    db.query('SELECT filename, starttime, totalKM, vin FROM data WHERE date=?', [date], function (err, results, fields) {
+    db.query('SELECT filename, starttime, totalKM, vin, energyConsumption FROM data WHERE date=?', [date], function (err, results, fields) {
         // If error occures, throw it
         if (err) throw err;
         // Define array data
