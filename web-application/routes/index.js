@@ -188,7 +188,9 @@ router.get('/getAllGPS/:selector/:value', authenticationMiddleware(), function (
             }
             else if (selector == "km_min") {
                 var km_min = parseFloat(value);
-                if (km_min != NaN && km_min >= results[i].totalKM) {
+		console.log(km_min);
+                if ((km_min != NaN) && (km_min <= results[i].totalKM)) {
+		    console.log("File added: " + results[i].filename);
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
@@ -198,7 +200,7 @@ router.get('/getAllGPS/:selector/:value', authenticationMiddleware(), function (
             }
             else if (selector == "consumption_min") {
                 var consumption_min = parseFloat(value);
-                if (consumption_min != NaN && consumption_min >= results[i].energyConsumption) {
+                if (consumption_min != NaN && consumption_min <= results[i].energyConsumption) {
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
@@ -242,8 +244,10 @@ router.get('/getAllGPS/:selector/:value', authenticationMiddleware(), function (
             longestTrip: longestTrip,
             vConsumption: vConsumption / (tmp.length * averageTripLength) * 100
         })
+	console.log("General information pushed to data");
         // Send the http response as the array of data
         res.send(data);
+	console.log("GetAllGPS ended");
     });
 });
 
@@ -274,6 +278,7 @@ router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), funct
             else if (selector == "vin") {
                 // The vin is saved as a hash in the database, so it has to be compared with bcrypt
                 if (bcrypt.compareSync(value, results[i].vin)) {
+		    console.log("File added: " + results[i].filename);
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
@@ -283,7 +288,7 @@ router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), funct
             }
             else if (selector == "km_min") {
                 var km_min = parseFloat(value);
-                if (km_min != NaN && km_min >= results[i].totalKM) {
+                if (km_min != NaN && km_min <= results[i].totalKM) {
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
@@ -293,7 +298,7 @@ router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), funct
             }
             else if (selector == "consumption_min") {
                 var consumption_min = parseFloat(value);
-                if (consumption_min != NaN && consumption_min >= results[i].energyConsumption) {
+                if (consumption_min != NaN && consumption_min <= results[i].energyConsumption) {
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
@@ -307,6 +312,7 @@ router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), funct
         // For every cycle in tmp, calculate the waiting time by creating the dates with endtimes and starttimes and subtract them. Push the 
         // waiting time with the GPS coordinates (without altitude) as a dictionary to the array data
         for(var i = 0; i < (tmp.length - 1); i++) {
+	    console.log("File: " + tmp[i].filename);
             var tmp1 = (tmp[i].endtime).split(":");
             var date1 = (tmp[i].endDate).split("-");
             var tmp2 = (tmp[i+1].starttime).split(":");
@@ -385,7 +391,7 @@ router.get('/getTrips/:date/:selector/:value', authenticationMiddleware(), funct
             }
             else if (selector == "km_min") {
                 var km_min = parseFloat(value);
-                if (km_min != NaN && km_min >= results[i].totalKM) {
+                if (km_min != NaN && km_min <= results[i].totalKM) {
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
@@ -395,7 +401,7 @@ router.get('/getTrips/:date/:selector/:value', authenticationMiddleware(), funct
             }
             else if (selector == "consumption_min") {
                 var consumption_min = parseFloat(value);
-                if (consumption_min != NaN && consumption_min >= results[i].energyConsumption) {
+                if (consumption_min != NaN && consumption_min <= results[i].energyConsumption) {
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
