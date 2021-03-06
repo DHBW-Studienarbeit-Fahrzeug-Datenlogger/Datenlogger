@@ -155,9 +155,10 @@ router.get('/getGPS/:token', authenticationMiddleware(), function (req, res) {
 
 
 // GET the gps data of the given vin
-router.get('/getAllGPS/:vin', authenticationMiddleware(), function (req, res) {
-    // Get the specified VIN
-    var vin = req.params.vin;
+router.get('/getAllGPS/:selector/:value', authenticationMiddleware(), function (req, res) {
+    // Get the specified selector and value
+    var value = req.params.value;
+    var selector = req.params.selector;
     // Establish connetion to the database
     var db = require('../db.js');
     // Get some driving cycle data
@@ -166,15 +167,44 @@ router.get('/getAllGPS/:vin', authenticationMiddleware(), function (req, res) {
         if (err) throw err;
         // Define tmp as an array
         var tmp = [];
-        // For every driving cycle in the result, if the hashed VINs match, append a dictionary of the cycle data to the array tmp
-        for(var i = 0; i < results.length; i++) {
-            // The vin is saved as a hash in the database, so it has to be compared with bcrypt
-            if(bcrypt.compareSync(vin, results[i].vin)) {
+        // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
+        for (var i = 0; i < results.length; i++) {
+            if (value == "none") {
                 tmp.push({
                     filename: results[i].filename,
                     totalKM: results[i].totalKM,
                     energyConsumption: results[i].energyConsumption
                 })
+            }
+            else if (selector == "vin") {
+                // The vin is saved as a hash in the database, so it has to be compared with bcrypt
+                if (bcrypt.compareSync(value, results[i].vin)) {
+                    tmp.push({
+                        filename: results[i].filename,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption
+                    })
+                }
+            }
+            else if (selector == "km_min") {
+                var km_min = parseFloat(value);
+                if (km_min != NaN && km_min >= results[i].totalKM) {
+                    tmp.push({
+                        filename: results[i].filename,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption
+                    })
+                }
+            }
+            else if (selector == "consumption_min") {
+                var consumption_min = parseFloat(value);
+                if (consumption_min != NaN && consumption_min >= results[i].energyConsumption) {
+                    tmp.push({
+                        filename: results[i].filename,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption
+                    })
+                }
             }
         }
         // Define the array data
@@ -220,9 +250,10 @@ router.get('/getAllGPS/:vin', authenticationMiddleware(), function (req, res) {
 
 
 // GET the waiting points for the given vin
-router.get('/getWaitingTime/:vin', authenticationMiddleware(), function (req, res) {
-    // Get the specified VIN
-    var vin = req.params.vin;
+router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), function (req, res) {
+    // Get the specified selector and value
+    var selector = req.params.selector;
+    var value = req.params.value;
     // Establish connection to database
     var db = require('../db.js');
     // Get some driving cycle data 
@@ -231,17 +262,44 @@ router.get('/getWaitingTime/:vin', authenticationMiddleware(), function (req, re
         if (err) throw err;
         // Define array tmp
         var tmp = [];
-        // For every driving cycle in the result, if the hashed VIN matches, append a dictionary of the cycle data to the array tmp
-        for(var i = 0; i < results.length; i++) {
-            if(bcrypt.compareSync(vin, results[i].vin)) {
+        // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
+        for (var i = 0; i < results.length; i++) {
+            if (value == "none") {
                 tmp.push({
-                    date: results[i].date,
-                    starttime: results[i].starttime,
-                    endtime: results[i].endtime,
-                    endLat: results[i].endLat,
-                    endLong: results[i].endLong,
-                    endDate: results[i].endDate
+                    filename: results[i].filename,
+                    totalKM: results[i].totalKM,
+                    energyConsumption: results[i].energyConsumption
                 })
+            }
+            else if (selector == "vin") {
+                // The vin is saved as a hash in the database, so it has to be compared with bcrypt
+                if (bcrypt.compareSync(value, results[i].vin)) {
+                    tmp.push({
+                        filename: results[i].filename,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption
+                    })
+                }
+            }
+            else if (selector == "km_min") {
+                var km_min = parseFloat(value);
+                if (km_min != NaN && km_min >= results[i].totalKM) {
+                    tmp.push({
+                        filename: results[i].filename,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption
+                    })
+                }
+            }
+            else if (selector == "consumption_min") {
+                var consumption_min = parseFloat(value);
+                if (consumption_min != NaN && consumption_min >= results[i].energyConsumption) {
+                    tmp.push({
+                        filename: results[i].filename,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption
+                    })
+                }
             }
         }
         // Define array data
@@ -279,10 +337,11 @@ router.get('/dashboard', authenticationMiddleware(), function (req, res, next) {
 
 
 // GET all trips of the given vin and date
-router.get('/getTrips/:date/:vin', authenticationMiddleware(), function (req, res) {
+router.get('/getTrips/:date/:selector/:value', authenticationMiddleware(), function (req, res) {
     // Get the specified date and VIN 
     var date = req.params.date;
-    var vin = req.params.vin;
+    var selector = req.params.selector;
+    var value = req.params.value;
     // If the date is "undefined", get the date of today adn create date string for variable date
     if(req.params.date === "undefined") {
         var today = new Date();
@@ -305,14 +364,44 @@ router.get('/getTrips/:date/:vin', authenticationMiddleware(), function (req, re
         if (err) throw err;
         // Define array data
         var data = [];
-        // For every cycle in results, if the hashed VIN matches, append a dictionary with the JSON filename, starttime and distance to data
-        for(var i = 0; i < results.length; i++) {
-            if(bcrypt.compareSync(vin, results[i].vin)) {
-                data.push({
+        // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
+        for (var i = 0; i < results.length; i++) {
+            if (value == "none") {
+                tmp.push({
                     filename: results[i].filename,
-                    starttime: results[i].starttime,
-                    totalKM: results[i].totalKM
+                    totalKM: results[i].totalKM,
+                    energyConsumption: results[i].energyConsumption
                 })
+            }
+            else if (selector == "vin") {
+                // The vin is saved as a hash in the database, so it has to be compared with bcrypt
+                if (bcrypt.compareSync(value, results[i].vin)) {
+                    tmp.push({
+                        filename: results[i].filename,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption
+                    })
+                }
+            }
+            else if (selector == "km_min") {
+                var km_min = parseFloat(value);
+                if (km_min != NaN && km_min >= results[i].totalKM) {
+                    tmp.push({
+                        filename: results[i].filename,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption
+                    })
+                }
+            }
+            else if (selector == "consumption_min") {
+                var consumption_min = parseFloat(value);
+                if (consumption_min != NaN && consumption_min >= results[i].energyConsumption) {
+                    tmp.push({
+                        filename: results[i].filename,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption
+                    })
+                }
             }
         }
         // Send http response as array data

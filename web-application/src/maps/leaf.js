@@ -29,11 +29,12 @@ var printAllMarkers = async function() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map0);
 
+    var selector = document.getElementById('selector').value;
     var vin = document.getElementById('VIN').value;
     vin = (vin === "") ? "none" : vin; 
     console.log(vin)
 
-    let response = await fetch("/getAllGPS/" + vin, {
+    let response = await fetch("/getAllGPS/" + selector + "/" + vin, {
         credentials: 'same-origin'
     });
     let markers = await response.json();
@@ -134,12 +135,13 @@ var printWaitingTime = async function() {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(map2);
 
-    
+
+    var selector = document.getElementById('selector').value;
     var vin = document.getElementById('VIN').value;
     vin = (vin === "") ? "none" : vin; 
     console.log(vin)
 
-    let response = await fetch("/getWaitingTime/" + vin, {
+    let response = await fetch("/getWaitingTime/" + selector + "/" + vin, {
         credentials: 'same-origin'
     });
     let markers = await response.json();

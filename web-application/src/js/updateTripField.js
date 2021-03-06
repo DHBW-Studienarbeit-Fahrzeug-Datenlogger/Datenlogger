@@ -6,11 +6,14 @@ var displayData = function() {
     $("#dataPart").css("display", "")
     $("#VinEingabe").css("display", "none")
     var vin = document.getElementById('firstVin').value;  
+    var selector = document.getElementById('selector_select').value;
     $("#VIN").val(vin);
+    $("#selector").val(selector);
     document.getElementById('VINButton').click()
 }
 
-var update = async function() {
+var update = async function () {
+    var selector = document.getElementById('selector').value;
     var vin = document.getElementById('VIN').value;
     console.log(vin)
     vin = (vin === "") ? "none" : vin; 
@@ -30,7 +33,7 @@ var update = async function() {
         date = mm + '-' + dd + '-' + yyyy;
     }
     console.log(date);
-    let response = await fetch("/getTrips/" + date + "/" + vin, {
+    let response = await fetch("/getTrips/" + date + "/" + selector + "/" + vin, {
         credentials: 'same-origin'
     });
     let filenames = await response.json();
