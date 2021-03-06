@@ -272,7 +272,13 @@ router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), funct
                 tmp.push({
                     filename: results[i].filename,
                     totalKM: results[i].totalKM,
-                    energyConsumption: results[i].energyConsumption
+                    energyConsumption: results[i].energyConsumption,
+                    date: results[i].date,
+                    starttime: results[i].starttime,
+                    endtime: results[i].endtime,
+                    endLat: results[i].endLat,
+                    endLong: results[i].endLong,
+                    endDate: results[i].endDate
                 })
             }
             else if (selector == "vin") {
@@ -282,7 +288,13 @@ router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), funct
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption
+                        energyConsumption: results[i].energyConsumption,
+                        date: results[i].date,
+                        starttime: results[i].starttime,
+                        endtime: results[i].endtime,
+                        endLat: results[i].endLat,
+                        endLong: results[i].endLong,
+                        endDate: results[i].endDate
                     })
                 }
             }
@@ -292,7 +304,13 @@ router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), funct
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption
+                        energyConsumption: results[i].energyConsumption,
+                        date: results[i].date,
+                        starttime: results[i].starttime,
+                        endtime: results[i].endtime,
+                        endLat: results[i].endLat,
+                        endLong: results[i].endLong,
+                        endDate: results[i].endDate
                     })
                 }
             }
@@ -302,7 +320,13 @@ router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), funct
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption
+                        energyConsumption: results[i].energyConsumption,
+                        date: results[i].date,
+                        starttime: results[i].starttime,
+                        endtime: results[i].endtime,
+                        endLat: results[i].endLat,
+                        endLong: results[i].endLong,
+                        endDate: results[i].endDate
                     })
                 }
             }
@@ -375,6 +399,7 @@ router.get('/getTrips/:date/:selector/:value', authenticationMiddleware(), funct
             if (value == "none") {
                 tmp.push({
                     filename: results[i].filename,
+                    starttime: results[i].starttime,
                     totalKM: results[i].totalKM,
                     energyConsumption: results[i].energyConsumption
                 })
@@ -384,6 +409,7 @@ router.get('/getTrips/:date/:selector/:value', authenticationMiddleware(), funct
                 if (bcrypt.compareSync(value, results[i].vin)) {
                     tmp.push({
                         filename: results[i].filename,
+                        starttime: results[i].starttime,
                         totalKM: results[i].totalKM,
                         energyConsumption: results[i].energyConsumption
                     })
@@ -394,6 +420,7 @@ router.get('/getTrips/:date/:selector/:value', authenticationMiddleware(), funct
                 if (km_min != NaN && km_min <= results[i].totalKM) {
                     tmp.push({
                         filename: results[i].filename,
+                        starttime: results[i].starttime,
                         totalKM: results[i].totalKM,
                         energyConsumption: results[i].energyConsumption
                     })
@@ -404,6 +431,7 @@ router.get('/getTrips/:date/:selector/:value', authenticationMiddleware(), funct
                 if (consumption_min != NaN && consumption_min <= results[i].energyConsumption) {
                     tmp.push({
                         filename: results[i].filename,
+                        starttime: results[i].starttime,
                         totalKM: results[i].totalKM,
                         energyConsumption: results[i].energyConsumption
                     })
