@@ -32,8 +32,10 @@ CREATE TABLE IF NOT EXISTS `obd/gps-datenlogger`.`data` (
   `endLat` FLOAT NULL DEFAULT NULL,
   `endLong` FLOAT NULL DEFAULT NULL,
   `endDate` VARCHAR(45) NULL DEFAULT NULL,
+  `additional_file` VARCHAR(180) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `filename_UNIQUE` (`filename` ASC)
+  UNIQUE INDEX `filename_UNIQUE` (`filename` ASC),
+  UNIQUE INDEX `additional_file_UNIQUE` (`additional_file` ASC)
 );
 
 -- -----------------------------------------------------
@@ -73,5 +75,32 @@ CREATE TABLE IF NOT EXISTS `obd/gps-datenlogger`.`cars` (
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   UNIQUE INDEX `name_UNIQUE` (`name` ASC)
 );
+
+-- -----------------------------------------------------
+-- Table `obd/gps-datenlogger`.`simulations`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `obd/gps-datenlogger`.`simulation` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `filename` VARCHAR(180) NULL DEFAULT NULL,
+  `date` VARCHAR(45) NULL DEFAULT NULL,
+  `starttime` VARCHAR(45) NULL DEFAULT NULL,
+  `totalKM` FLOAT NULL DEFAULT NULL,
+  `endtime` VARCHAR(45) NULL DEFAULT NULL,
+  `VIN` VARCHAR(20) NULL DEFAULT NULL,
+  `fuelConsumption` FLOAT NULL DEFAULT NULL,
+  `energyConsumption` FLOAT NULL DEFAULT NULL,
+  `endLat` FLOAT NULL DEFAULT NULL,
+  `endLong` FLOAT NULL DEFAULT NULL,
+  `endDate` VARCHAR(45) NULL DEFAULT NULL,
+  `additional_file` VARCHAR(180) NULL DEFAULT NULL,
+  `id_car` INT(11) NULL DEFAULT NULL,
+  `id_route` INT(11) NULL DEFAULT NULL,
+  `filename_dumpfile` VARCHAR(180) NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `unique_id` (`id` ASC),
+  UNIQUE INDEX `filename_dumpfile_unique` (`filename_dumpfile` ASC)
+);
+
+
 
 INSERT INTO `cars` VALUES (1,'micro',18.3,17.6,60,'Smart ForTwo Coupe Prime'),(2,'micro',13.7,19,60,'VW E-UP'),(3,'mini',17.3,24.2,85,'VW E-Golf'),(4,'mini',17.4,37.9,125,'BMW i3'),(5,'mini',14.7,28,88,'Hyundai IONIQ Elektro Style'),(6,'mini',19.5,39.2,100,'Hyundai Kona Elektro Small'),(7,'mini',21.3,40,110,'Nissan Leaf Acenta'),(8,'mini',19.7,60,150,'Opel Ampera-E'),(9,'mini',20.3,41,48,'Renault Zoe'),(10,'mini',19.1,27,81,'KIA Soul EV'),(11,'mini',22.6,33.5,107,'Ford Focus Electric'),(12,'mini',19.5,68,150,'Hyundai Kona Elektro Large'),(13,'van',28.1,40,80,'Nissan e-NV200 Evalia'),(14,'van',22.8,40,80,'Nissan e-NV200 Kombi Premium'),(15,'van',23.2,33,44,'Renault Kangoo Z.E.'),(16,'medium',15,75,211,'Tesla Model 3 Long-Range'),(17,'medium',16,75,340,'Tesla Model 3 Long-Range Dual-Motor');
