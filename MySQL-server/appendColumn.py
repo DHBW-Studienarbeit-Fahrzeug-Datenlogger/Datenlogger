@@ -39,7 +39,18 @@ except:
 cursor = db.cursor()
 
 ### Append column additional_file to table data
-cursor.execute("ALTER TABLE data ADD additional_file VARCHAR(180) NULL DEFAULT NULL")
+try:
+    cursor.execute("ALTER TABLE data ADD additional_file VARCHAR(180) NULL DEFAULT NULL")
+except Exception as e:
+    print("Column in data probably already existing:\n")
+    print(e)
+    
+### Append columns to table cars
+try:
+    cursor.execute("ALTER TABLE cars ADD (cw_value FLOAT NULL DEFAULT NULL, proj_area FLOAT NULL DEFAULT NULL, rolling_friction_factor FLOAT NULL DEFAULT NULL, mass FLOAT NULL DEFAULT NULL, mass_factor FLOAT NULL DEFAULT NULL, area FLOAT NULL DEFAULT NULL, lambda_transfer FLOAT NULL DEFAULT NULL, alpha_inside FLOAT NULL DEFAULT NULL, alpha_outside FLOAT NULL DEFAULT NULL, thickness FLOAT NULL DEFAULT NULL)")
+except Exception as e:
+    print("Columns in cars probably already existing:\n")
+    print(e)
 
 
 ### Close the connection

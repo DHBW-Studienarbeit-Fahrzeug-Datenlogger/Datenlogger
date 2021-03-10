@@ -50,7 +50,13 @@ def getCSV_rows():
                 row[i] = float(element)
             except:
                 pass
+        # If not enough values given in the list, append None
+        if 15 - len(row) > 0:
+            for i in range(15 - len(row)):
+                row.append(None)
+            
     
+                
     return row_list
 
 
@@ -110,6 +116,7 @@ def main():
     new_cars_list = []
     
     row_list = getCSV_rows()
+    print(row_list)
     
     # Output for validation: Rows from CSV file
     print("\nThe cars from the CSV file:")
@@ -131,7 +138,7 @@ def main():
     ### Insert the cars into the table
     for row in new_cars_list:
         # Execute the command
-        cursor.execute("INSERT INTO cars (type, consumption, capacity, power, name) VALUES (%s, %s, %s, %s, %s)", row)
+        cursor.execute("INSERT INTO cars (type, consumption, capacity, power, name, cw_value, proj_area, rolling_friction_factor, mass, mass_factor, area, lambda_transfer, alpha_inside, alpha_outside, thickness) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)", row)
         db.commit()
     
     
