@@ -87,7 +87,7 @@ CREATE TABLE IF NOT EXISTS `obd/gps-datenlogger`.`cars` (
 );
 
 -- -----------------------------------------------------
--- Table `obd/gps-datenlogger`.`simulations`
+-- Table `obd/gps-datenlogger`.`simulation`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `obd/gps-datenlogger`.`simulation` (
   `id` INT(11) NOT NULL AUTO_INCREMENT,
