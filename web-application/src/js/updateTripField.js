@@ -8,7 +8,14 @@ var displayData = function() {
     var vin = document.getElementById('firstVin').value;  
     var selector = document.getElementById('selector_select').value;
     $("#VIN").val(vin);
-    $("#selector").val(selector);
+    var options = $("#selector").options;
+    for (var opt, j = 0; opt = options[j]; j++) {
+        if (opt.value == selector) {
+            $("#selector").selectedIndex = j;
+            break;
+        }
+    }
+    
     document.getElementById('VINButton').click()
 }
 

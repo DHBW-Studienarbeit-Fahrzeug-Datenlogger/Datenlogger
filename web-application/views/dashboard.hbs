@@ -35,14 +35,15 @@
     <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
       <div id="VinEingabe" class="container jumbotron login">
         <h1>Choose the driving cycles to consider</h1>
-          <div class="form-group">
-              <select id="selector_select">
-                      <option value="vin">VIN</option>
-                      <option value="km_min">Minimum of route length [km]</option>
-                      <option value="consumption_min">Minimum of energy consumption [kWh]</option>
-              </select>
-              <input type="text" id="firstVin" name="vin" class="form-control" placeholder="value">
-          </div>
+        <div class="form-group">
+            <select id="selector_select">
+                <option value="vin">VIN</option>
+                <option value="km_min">Minimum of route length [km]</option>
+                <option value="consumption_min">Minimum of energy consumption [kWh]</option>
+            </select>
+            <br />
+            <input type="text" id="firstVin" name="vin" class="form-control" placeholder="value">
+        </div>
           <button onclick="displayData()" class="btn btn-primary">Submit</button>
           <br />
           Note: If no value is given, all driving cycles from the database will be shown.
