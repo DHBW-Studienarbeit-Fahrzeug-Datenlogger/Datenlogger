@@ -71,6 +71,16 @@ CREATE TABLE IF NOT EXISTS `obd/gps-datenlogger`.`cars` (
   `capacity` FLOAT NULL DEFAULT NULL,
   `power` FLOAT NULL DEFAULT NULL,
   `name` VARCHAR(45) NULL DEFAULT NULL,
+  `cw_value` FLOAT NULL DEFAULT NULL,
+  `proj_area` FLOAT NULL DEFAULT NULL,
+  `rolling_friction_factor` FLOAT NULL DEFAULT NULL,
+  `mass` FLOAT NULL DEFAULT NULL,
+  `mass_factor` FLOAT NULL DEFAULT NULL,
+  `area` FLOAT NULL DEFAULT NULL,
+  `lambda_transfer` FLOAT NULL DEFAULT NULL,
+  `alpha_inside` FLOAT NULL DEFAULT NULL,
+  `alpha_outside` FLOAT NULL DEFAULT NULL,
+  `thickness` FLOAT NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC),
   UNIQUE INDEX `name_UNIQUE` (`name` ASC)
@@ -95,10 +105,10 @@ CREATE TABLE IF NOT EXISTS `obd/gps-datenlogger`.`simulation` (
   `additional_file` VARCHAR(180) NULL DEFAULT NULL,
   `id_car` INT(11) NULL DEFAULT NULL,
   `id_route` INT(11) NULL DEFAULT NULL,
-  `filename_dumpfile` VARCHAR(180) NULL DEFAULT NULL,
+  `filename_energy` VARCHAR(180) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `unique_id` (`id` ASC),
-  UNIQUE INDEX `filename_dumpfile_unique` (`filename_dumpfile` ASC)
+  UNIQUE INDEX `filename_energy` (`filename_energy` ASC)
 );
 
 
