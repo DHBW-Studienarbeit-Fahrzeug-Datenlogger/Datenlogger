@@ -9,8 +9,8 @@ var displayData = function() {
     var selector = document.getElementById('selector_select').value;
     $("#VIN").val(vin);
     var options = $("#selector").options;
-    for (var opt, j = 0; opt = options[j]; j++) {
-        if (opt.value == selector) {
+    for (var j = 0; j < options.length; j++) {
+        if (options[j].value == selector) {
             $("#selector").selectedIndex = j;
             break;
         }
