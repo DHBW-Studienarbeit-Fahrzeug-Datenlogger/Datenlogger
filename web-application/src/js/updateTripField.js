@@ -9,11 +9,11 @@ var displayData = function() {
     var selector = document.getElementById('selector_select').value;
     $("#VIN").val(vin);
     var options = $("#selector").options;
-    /*for (var j = 0; j < options.length; j++) {
-        if (options[j].value == selector) {
+    for (var j = 0; j < options.length; j++) {
+        /*if (options[j].value == selector) {
             document.querySelector("#selector").selectedIndex = j;
-        }
-    }*/
+        }*/
+    }
     
     document.getElementById('VINButton').click()
 }
