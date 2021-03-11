@@ -1,4 +1,5 @@
 var displayData = function() {
+    console.log("displayData()");
     $("#headerVinEingabe").css("display", "")
     $("#sidebar").css("display", "")
     $("#firstPart").css("display", "")
