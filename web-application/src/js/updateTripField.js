@@ -11,7 +11,7 @@ var displayData = function() {
     var options = $("#selector").options;
     for (var j = 0; j < options.length; j++) {
         if (options[j].value == selector) {
-            $("#selector").selectedIndex = j;
+            $("#selector").selectByIndex(j);
             break;
         }
     }
