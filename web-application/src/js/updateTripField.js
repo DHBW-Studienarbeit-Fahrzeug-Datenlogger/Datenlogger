@@ -1,5 +1,4 @@
 var displayData = function() {
-    console.log("displayData()");
     $("#headerVinEingabe").css("display", "")
     $("#sidebar").css("display", "")
     $("#firstPart").css("display", "")
@@ -8,14 +7,11 @@ var displayData = function() {
     $("#VinEingabe").css("display", "none")
     var vin = document.getElementById('firstVin').value;  
     var selector = document.getElementById('selector_select').value;
-    console.log(selector);
     $("#VIN").val(vin);
     var options = $("#selector").options;
-    console.log(options.length);
     for (var j = 0; j < options.length; j++) {
         if (options[j].value == selector) {
-            console.log(j);
-            $("#selector").selectByIndex(j);
+            $("#selector").val(selector);
             break;
         }
     }
