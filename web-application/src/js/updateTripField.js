@@ -8,11 +8,12 @@ var displayData = function() {
     var vin = document.getElementById('firstVin').value;  
     var selector = document.getElementById('selector_select').value;
     $("#VIN").val(vin);
-    var options = $("#selector").options;
+    var options = Array.from(document.querySelector("#selector").options);
+    var len = options.length;
     for (var j = 0; j < options.length; j++) {
-        /*if (options[j].value == selector) {
+        if (options[j].value == selector) {
             document.querySelector("#selector").selectedIndex = j;
-        }*/
+        }
     }
     
     document.getElementById('VINButton').click()
