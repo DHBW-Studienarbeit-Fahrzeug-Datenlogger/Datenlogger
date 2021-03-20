@@ -133,6 +133,74 @@ router.get('/getAddData/:token', authenticationMiddleware(), function (req, res)
 
 
 
+// GET the ID for the route from a given filename
+router.get('/getID/:filename', authenticationMiddleware(), function (req, res) {
+    console.log("getID: " + filename);
+    var db = require('../db.js');
+    var filename = req.params.filename;
+
+    db.query('SELECT id FROM data WHERE filename=?', [filename], function (err, results, fields)  {
+        // If error occures, throw it
+        if (err) throw err;
+
+        // Send back the id from the results if a result is found, otherwise send back 'none'
+        if (results.length != 0) {
+            res.send(results[0].id);
+        }
+        else {
+            res.send("none");
+        }
+    });   
+});
+
+
+
+// Get all ids of the routes in data
+router.get('/getIDs', authenticationMiddleware(), function (req, res) {
+    console.log("getIDs");
+    var db = require('../db.js');
+
+    var id_list = [];
+
+    db.query('SELECT id FROM data', function (err, results, fields) {
+        // If error occures, throw it
+        if (err) throw err;
+
+        // Extract the IDs from the result and push them into the array
+        for (var i = 0; i < results.length; i++) {
+            id_list.push(results[i].id)
+        }
+
+        // Send back the list of IDs
+        res.send(id_list)
+    });
+});
+
+
+
+// Get all cars
+router.get('/getCars', authenticationMiddleware(), function (req, res) {
+    console.log("getCars");
+    var db = require('../db.js');
+
+    var car_list = [];
+
+    db.query('SELECT name FROM cars', function (err, results, fields) {
+        // If error occures, throw it
+        if (err) throw err;
+
+        // Extract the IDs from the result and push them into the array
+        for (var i = 0; i < results.length; i++) {
+            car_list.push(results[i].name)
+        }
+
+        // Send back the list of cars
+        res.send(car_list)
+    });
+});
+
+
+
 // GET the gps data of the given filename
 router.get('/getGPS/:token', authenticationMiddleware(), function (req, res) {
     // Get the JSON file with the specified filename
@@ -155,14 +223,18 @@ router.get('/getGPS/:token', authenticationMiddleware(), function (req, res) {
 
 
 // GET the gps data of the given vin
-router.get('/getAllGPS/:selector/:value', authenticationMiddleware(), function (req, res) {
+router.get('/getAllGPS/:sim_real/:selector/:value', authenticationMiddleware(), function (req, res) {
     // Get the specified selector and value
     var value = req.params.value;
     var selector = req.params.selector;
     // Establish connetion to the database
     var db = require('../db.js');
+
+    // Determine whether to get data from table data (real cycles) or table simulations (simulated cycles)
+    var sim_or_real = req.params.sim_real;
+
     // Get some driving cycle data
-    db.query('SELECT filename, vin, totalKM, energyConsumption FROM data', function(err, results, fields) {
+    db.query('SELECT id, filename, vin, totalKM, energyConsumption FROM ' + sim_or_real, function (err, results, fields) {
         // If error occures, throw it
         if (err) throw err;
         // Define tmp as an array
@@ -173,7 +245,8 @@ router.get('/getAllGPS/:selector/:value', authenticationMiddleware(), function (
                 tmp.push({
                     filename: results[i].filename,
                     totalKM: results[i].totalKM,
-                    energyConsumption: results[i].energyConsumption
+                    energyConsumption: results[i].energyConsumption,
+                    id: results[i].id
                 })
             }
             else if (selector == "vin") {
@@ -182,19 +255,21 @@ router.get('/getAllGPS/:selector/:value', authenticationMiddleware(), function (
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption
+                        energyConsumption: results[i].energyConsumption,
+                        id: results[i].id
                     })
                 }
             }
             else if (selector == "km_min") {
                 var km_min = parseFloat(value);
-		console.log(km_min);
+                console.log(km_min);
                 if ((km_min != NaN) && (km_min <= results[i].totalKM)) {
-		    console.log("File added: " + results[i].filename);
+                    console.log("File added: " + results[i].filename);
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption
+                        energyConsumption: results[i].energyConsumption,
+                        id: results[i].id
                     })
                 }
             }
@@ -204,7 +279,19 @@ router.get('/getAllGPS/:selector/:value', authenticationMiddleware(), function (
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption
+                        energyConsumption: results[i].energyConsumption,
+                        id: results[i].id
+                    })
+                }
+            }
+            else if (selector == "id") {
+                var id = parseInt(value);
+                if (id != NaN && id == results[i].id) {
+                    tmp.push({
+                        filename: results[i].filename,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption,
+                        id: results[i].id
                     })
                 }
             }
@@ -254,14 +341,18 @@ router.get('/getAllGPS/:selector/:value', authenticationMiddleware(), function (
 
 
 // GET the waiting points for the given vin
-router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), function (req, res) {
+router.get('/getWaitingTime/:sim_real/:selector/:value', authenticationMiddleware(), function (req, res) {
     // Get the specified selector and value
     var selector = req.params.selector;
     var value = req.params.value;
     // Establish connection to database
     var db = require('../db.js');
+
+    // Determine whether to get data from table data (real cycles) or table simulations (simulated cycles)
+    var sim_or_real = req.params.sim_real;
+
     // Get some driving cycle data 
-    db.query('SELECT date, starttime, endtime, endLat, endLong, endDate, vin, totalKM, energyConsumption, filename FROM data', function(err, results, fields) {
+    db.query('SELECT id, date, starttime, endtime, endLat, endLong, endDate, vin, totalKM, energyConsumption, filename FROM ' + sim_or_real, function (err, results, fields) {
         // If error occures, throw it
         if (err) throw err;
         // Define array tmp
@@ -330,6 +421,22 @@ router.get('/getWaitingTime/:selector/:value', authenticationMiddleware(), funct
                     })
                 }
             }
+            else if (selector == "id") {
+                var id = parseInt(value);
+                if (id != NaN && id == results[i].id) {
+                    tmp.push({
+                        filename: results[i].filename,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption,
+                        date: results[i].date,
+                        starttime: results[i].starttime,
+                        endtime: results[i].endtime,
+                        endLat: results[i].endLat,
+                        endLong: results[i].endLong,
+                        endDate: results[i].endDate
+                    })
+                }
+            }
         }
         // Define array data
         var data = [];
@@ -367,7 +474,7 @@ router.get('/dashboard', authenticationMiddleware(), function (req, res, next) {
 
 
 // GET all trips of the given vin and date
-router.get('/getTrips/:date/:selector/:value', authenticationMiddleware(), function (req, res) {
+router.get('/getTrips/:date/:sim_real/:selector/:value', authenticationMiddleware(), function (req, res) {
     // Get the specified date and VIN 
     var date = req.params.date;
     var selector = req.params.selector;
@@ -388,8 +495,12 @@ router.get('/getTrips/:date/:selector/:value', authenticationMiddleware(), funct
     }
     // Establish connection to database
     var db = require('../db.js');
+
+    // Determine whether to get data from table data (real cycles) or table simulations (simulated cycles)
+    var sim_or_real = req.params.sim_real;
+
     // Get some driving cycle data from the cycles of the specified date
-    db.query('SELECT filename, starttime, totalKM, vin, energyConsumption FROM data WHERE date=?', [date], function (err, results, fields) {
+    db.query('SELECT id, filename, starttime, totalKM, vin, energyConsumption FROM ' + sim_or_real + ' WHERE date=?', [date], function (err, results, fields) {
         // If error occures, throw it
         if (err) throw err;
         // Define array data
@@ -397,43 +508,59 @@ router.get('/getTrips/:date/:selector/:value', authenticationMiddleware(), funct
         // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
         for (var i = 0; i < results.length; i++) {
             if (value == "none") {
-                tmp.push({
+                data.push({
                     filename: results[i].filename,
                     starttime: results[i].starttime,
                     totalKM: results[i].totalKM,
-                    energyConsumption: results[i].energyConsumption
+                    energyConsumption: results[i].energyConsumption,
+                    id: results[i].id
                 })
             }
             else if (selector == "vin") {
                 // The vin is saved as a hash in the database, so it has to be compared with bcrypt
                 if (bcrypt.compareSync(value, results[i].vin)) {
-                    tmp.push({
+                    data.push({
                         filename: results[i].filename,
                         starttime: results[i].starttime,
                         totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption
+                        energyConsumption: results[i].energyConsumption,
+                        id: results[i].id
                     })
                 }
             }
             else if (selector == "km_min") {
                 var km_min = parseFloat(value);
                 if (km_min != NaN && km_min <= results[i].totalKM) {
-                    tmp.push({
+                    data.push({
                         filename: results[i].filename,
                         starttime: results[i].starttime,
                         totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption
+                        energyConsumption: results[i].energyConsumption,
+                        id: results[i].id
                     })
                 }
             }
             else if (selector == "consumption_min") {
                 var consumption_min = parseFloat(value);
                 if (consumption_min != NaN && consumption_min <= results[i].energyConsumption) {
-                    tmp.push({
+                    data.push({
                         filename: results[i].filename,
                         starttime: results[i].starttime,
                         totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption
+                        energyConsumption: results[i].energyConsumption,
+                        id: results[i].id
+                    })
+                }
+            }
+            else if (selector == "id") {
+                var id = parseInt(value);
+                if (id != NaN && id == results[i].id) {
+                    data.push({
+                        filename: results[i].filename,
+                        starttime: results[i].starttime,
+                        totalKM: results[i].totalKM,
+                        energyConsumption: results[i].energyConsumption,
+                        id: results[i].id
                     })
                 }
             }

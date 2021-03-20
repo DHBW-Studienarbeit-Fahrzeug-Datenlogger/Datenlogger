@@ -4,7 +4,7 @@
   <div class="row">
     <div id="sidebar">
       <nav class="col-md-2 d-none d-md-block bg-light sidebar">
-        <div class="sidebar-sticky">
+        <div class="sidebar-sticky" id="sidebar_navigation_data" style="display: none">
           <ul class="nav flex-column">
             <li class="nav-item">
               <a class="nav-link" id="scroll" href="#generalData">
@@ -29,6 +29,14 @@
             </li>
           </ul>
         </div>
+        <div class="sidebar-sticky" id="sidebar_simulation_real">
+            <button class="btn" style="border:none" onclick="displaySim()">
+                View drive cycles
+            </button>
+            <button class="btn" style="border:none" onclick="displayRoutes()">
+                Simulation
+            </button>
+        </div>
       </nav>
     </div>
 
@@ -36,10 +44,16 @@
       <div id="VinEingabe" class="container jumbotron login">
         <h1>Choose the driving cycles to consider</h1>
         <div class="form-group">
-            <select id="selector_select">
+            <select class="form-control" id="sim_real_select">
+                <option value="data">View logged drive cycles</option>
+                <option value="simulations">View simulated drive cycles</option>
+            </select>
+            <br />
+            <select class="form-control" id="selector_select">
                 <option value="vin">VIN</option>
                 <option value="km_min">Minimum of route length [km]</option>
                 <option value="consumption_min">Minimum of energy consumption [kWh]</option>
+                <option value="id">ID</option>
             </select>
             <br />
             <input type="text" id="firstVin" name="vin" class="form-control" placeholder="value">
@@ -47,6 +61,17 @@
           <button onclick="displayData()" class="btn btn-primary">Submit</button>
           <br />
           Note: If no value is given, all driving cycles from the database will be shown.
+      </div>
+      <div id="SimulationDivision" class="container jumbotron login">
+          Select the ID of the route to use:
+          <select class="form-control" id="id_select">
+          </select>
+          <br />
+          Select the car to use:
+          <select class="form-control" id="car_select">
+          </select>
+          <br />
+          <button onclick="" class="btn btn-primary">Submit</button>
       </div>
       <div id="firstPart" style="display: none">
         <div style="height: 600px;">

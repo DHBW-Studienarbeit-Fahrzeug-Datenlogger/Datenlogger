@@ -5,23 +5,120 @@ var displayData = function() {
     $("#secondPart").css("display", "")
     $("#dataPart").css("display", "")
     $("#VinEingabe").css("display", "none")
-    var vin = document.getElementById('firstVin').value;  
-    var selector = document.getElementById('selector_select').value;
+    $("#sidebar_navigation_data").css("display", "")
+    $("#sidebar_simulation_real").css("display", "none")
+
+    var vin = document.getElementById('firstVin').value;
     $("#VIN").val(vin);
-    var options = $("#selector").options;
-    for (var opt, j = 0; opt = options[j]; j++) {
-        if (opt.value == selector) {
-            $("#selector").selectedIndex = j;
-            break;
+
+    var selector = document.getElementById('selector_select').value;
+    var options = Array.from(document.querySelector("#selector").options);
+    for (var j = 0; j < options.length; j++) {
+        if (options[j].value == selector) {
+            document.querySelector("#selector").selectedIndex = j;
+        }
+    }
+
+    selector = document.getElementById('sim_real_select').value;
+    options = Array.from(document.querySelector("#sim_real_selector").options);
+    for (var j = 0; j < options.length; j++) {
+        if (options[j].value == selector) {
+            document.querySelector("#sim_real_selector").selectedIndex = j;
         }
     }
     
     document.getElementById('VINButton').click()
 }
 
+
+// Function to show the simulation interface by clicking on the sidebar reference
+var displaySim = function () {
+    $("#VinEingabe").css("display", "none");
+    $("#SimulationDivision").css("display", "");
+}
+
+
+// Function to show the standard interface for selecting a route by clicking on the sidebar reference
+var displayRoutes = function () {
+    $("#SimulationDivision").css("display", "none");
+    $("#VinEingabe").css("display", "");
+}
+
+
+// Function to insert the options into the select lists for the simulation
+var getOptions_sim = function () {
+    // Route to get the ids for the routes from the database
+    let response = await fetch("/getIDs", {
+        credentials: 'same-origin'
+    });
+    let id_list = await response.json();
+
+    // Route to get the cars from the database
+    let response2 = await fetch("/getCars", {
+        credentials: 'same-origin'
+    });
+    let car_list = await response2.json();
+
+    // Insert the options for the ids
+    for (var i = 0; i < id_list.length; i++) {
+        var innerHTML = `<option value="` + id_list[i] + `">` + id_list[i] + `</option>`
+        $("#id_select").append(innerHTML)
+    }
+
+    // Insert the options for the cars
+    for (var i = 0; i < car_list.length; i++) {
+        var innerHTML = `<option value="` + car_list[i] + `">` + car_list[i] + `</option>`
+        $("#car_select").append(innerHTML)
+    }
+}
+
+// Function to create the simulation
+var createSimulation = function () {
+    // Call python function
+    const { PythonShell } = require('python-shell');
+
+    var options = {
+        // Each line of data ending with '\n' is emitted as a message
+        mode: 'text',
+        args: ['hello'],
+        pythonOptions: ['-u'],
+        scriptPath: '../python'
+    };
+
+    var text_received = "none";
+
+    PythonShell.run('call_simulation.py', options, function (err, result) {
+        if (err) throw err;
+        text_received = results[0];
+    });
+
+    // Get id of created route
+    var id = 0;
+    // Put values into header selections
+    var options = Array.from(document.querySelector("#sim_real_selector").options);
+    for (var j = 0; j < options.length; j++) {
+        if (options[j].value == 'simulations') {
+            document.querySelector("#sim_real_selector").selectedIndex = j;
+        }
+    }
+
+    options = Array.from(document.querySelector("#selector").options);
+    for (var j = 0; j < options.length; j++) {
+        if (options[j].value == 'id') {
+            document.querySelector("#selector").selectedIndex = j;
+        }
+    }
+
+    $("#VIN").val(text_received);
+
+    // Show dashboard maps
+    document.getElementById('VINButton').click()
+}
+
 var update = async function () {
     var selector = document.getElementById('selector').value;
     var vin = document.getElementById('VIN').value;
+    var sim_real = document.getElementById('sim_real_selector').value;
     console.log(vin)
     vin = (vin === "") ? "none" : vin; 
     var dateArray = (document.getElementById('datepicker').value).split(".")
@@ -40,7 +137,7 @@ var update = async function () {
         date = mm + '-' + dd + '-' + yyyy;
     }
     console.log(date);
-    let response = await fetch("/getTrips/" + date + "/" + selector + "/" + vin, {
+    let response = await fetch("/getTrips/" + date + "/" + sim_real + "/" + selector + "/" + vin, {
         credentials: 'same-origin'
     });
     let filenames = await response.json();

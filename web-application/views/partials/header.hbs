@@ -86,12 +86,20 @@
             {{#if isAuthenticated}}
             {{#if dashboard}}
         <div id="headerVinEingabe" style="display: none" class="form-inline mt-2 mt-md-0">
-            <select id="selector">
+            <select class="form-control" id="sim_real_selector">
+                <option value="data">View logged drive cycles</option>
+                <option value="simulations">View simulated drive cycles</option>
+            </select>
+            <br />
+            <select class="form-control" id="selector">
                 <option value="vin">VIN</option>
                 <option value="km_min">Minimum of route length [km]</option>
                 <option value="consumption_min">Minimum of energy consumption [kWh]</option>
+                <option value="id">ID</option>
             </select>
+            <br />
             <input id="VIN" class="form-control mr-sm-2" type="text" placeholder="The value" aria-label="Search" onkeydown="if (event.keyCode == 13) {document.getElementById('VINButton').click()}">
+            <br />
             <button id="VINButton" type="button" class="btn btn-outline-success my-2 my-sm-0" onclick="update(); printAllMarkers(); printWaitingTime()">Update</button>
         </div>
             {{/if}}
