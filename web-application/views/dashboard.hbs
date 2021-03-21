@@ -30,13 +30,14 @@
           </ul>
         </div>
         <div class="sidebar-sticky" id="sidebar_simulation_real">
-            <button class="btn" style="border:none" onclick="displaySim()">
+	    <button class="btn" style="border:none" onclick="displayRoutes()">
                 View drive cycles
             </button>
-            <button class="btn" style="border:none" onclick="displayRoutes()">
+	    </ br>
+	    <button class="btn" style="border:none" onclick="displaySim()">
                 Simulation
             </button>
-        </div>
+	</div>
       </nav>
     </div>
 
@@ -62,16 +63,19 @@
           <br />
           Note: If no value is given, all driving cycles from the database will be shown.
       </div>
-      <div id="SimulationDivision" class="container jumbotron login">
-          Select the ID of the route to use:
-          <select class="form-control" id="id_select">
-          </select>
-          <br />
-          Select the car to use:
-          <select class="form-control" id="car_select">
-          </select>
-          <br />
-          <button onclick="" class="btn btn-primary">Submit</button>
+      <div id="SimulationDivision" class="container jumbotron login" style="display: none">
+	  <h1>Choose the parameters for the simulation</h1>
+	  <div class"form-group">
+              Select the ID of the route to use:
+              <select class="form-control" id="id_select">
+              </select>
+              <br />
+              Select the car to use:
+              <select class="form-control" id="car_select">
+              </select>
+              <br />
+              <button onclick="createSimulation()" class="btn btn-primary">Submit</button>
+	  </div>
       </div>
       <div id="firstPart" style="display: none">
         <div style="height: 600px;">

@@ -50,13 +50,13 @@ var printAllMarkers = async function() {
 
     for(var i = 0; i < (markers.length-1); i++) {
         //console.log(markers[i].GPS_Long.length)
-
+	
         // Get the id for the drive cycle
         let response3 = await fetch("/getID/" + markers[i].filename, {
             credentials: 'same-origin'
         });
         let id = await response3.json();
-
+	
         for (let g = 0; g < markers[i].GPS_Long.length; g++) {
             if(!(markers[i].GPS_Long[g] === null || markers[i].GPS_Lat[g] === null)) {
                 //console.log("test")
@@ -65,7 +65,7 @@ var printAllMarkers = async function() {
                     "lng": markers[i].GPS_Long[g]
                 });
                 L.marker([markers[i].GPS_Lat[g], markers[i].GPS_Long[g]], { icon: customIcon })
-                    .bindPopup('<p>Route-ID:' + id + '</p>')
+                    .bindPopup('<p>Route-ID:' + id[0] + '</p>')
                     .addTo( map0 );
                 /*
                 if(g != 0) {
@@ -333,11 +333,12 @@ var printMarkers = async function(filename, nof) {
             let allData = await response2.json();
 
             // Get the id for the drive cycle
+	    
             let response3 = await fetch("/getID/" + filename[g], {
                 credentials: 'same-origin'
             });
             let id = await response3.json();
-
+	    
             markers = await removeNull(markers);
             allMarkers.push(markers)
             //console.log("Markeranzahl: " + markers.length)
@@ -352,7 +353,7 @@ var printMarkers = async function(filename, nof) {
                 }
                 L.marker( [markers[i].lat, markers[i].lng], {opacity: tmp})
                     //TODO: show start and stop time
-                    .bindPopup( '<p>Route-ID:' + id + '</p>' )
+                    .bindPopup( '<p>Route-ID:' + id[0] + '</p>' )
                     .addTo( map );
 
                 if ((i + 1) < markers.length) {

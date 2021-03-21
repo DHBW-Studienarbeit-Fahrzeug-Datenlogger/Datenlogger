@@ -33,8 +33,11 @@ var displayData = function() {
 
 // Function to show the simulation interface by clicking on the sidebar reference
 var displaySim = function () {
+    console.log("displaySim start");
     $("#VinEingabe").css("display", "none");
     $("#SimulationDivision").css("display", "");
+    getOptions_sim();
+    console.log("displaySim end");
 }
 
 
@@ -46,7 +49,7 @@ var displayRoutes = function () {
 
 
 // Function to insert the options into the select lists for the simulation
-var getOptions_sim = function () {
+var getOptions_sim = async function () {
     // Route to get the ids for the routes from the database
     let response = await fetch("/getIDs", {
         credentials: 'same-origin'
@@ -54,7 +57,7 @@ var getOptions_sim = function () {
     let id_list = await response.json();
 
     // Route to get the cars from the database
-    let response2 = await fetch("/getCars", {
+    let response2 = await fetch("/getAllCars", {
         credentials: 'same-origin'
     });
     let car_list = await response2.json();
@@ -75,7 +78,7 @@ var getOptions_sim = function () {
 // Function to create the simulation
 var createSimulation = function () {
     // Call python function
-    const { PythonShell } = require('python-shell');
+    let {PythonShell} = require('python-shell')
 
     var options = {
         // Each line of data ending with '\n' is emitted as a message

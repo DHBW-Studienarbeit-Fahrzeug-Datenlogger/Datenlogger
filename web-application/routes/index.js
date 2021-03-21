@@ -138,19 +138,24 @@ router.get('/getID/:filename', authenticationMiddleware(), function (req, res) {
     console.log("getID: " + filename);
     var db = require('../db.js');
     var filename = req.params.filename;
+    var data = [];
+    if(filename === "undefined"){
+	console.log("filename is undefined");
+    }
+    else{
+	console.log("Getting filename");
+        db.query('SELECT id FROM data WHERE filename=?', [filename], function (err, results, fields)  {
+            // If error occures, throw it
+            if (err) throw err;
 
-    db.query('SELECT id FROM data WHERE filename=?', [filename], function (err, results, fields)  {
-        // If error occures, throw it
-        if (err) throw err;
-
-        // Send back the id from the results if a result is found, otherwise send back 'none'
-        if (results.length != 0) {
-            res.send(results[0].id);
-        }
-        else {
-            res.send("none");
-        }
-    });   
+            // Send back the id from the results if a result is found, otherwise send back 'none'
+            if (results.length != 0) {
+                data.push(results[0].id);
+            }
+        });
+    }
+    res.send(data);
+    console.log("getID ended");
 });
 
 
@@ -179,8 +184,8 @@ router.get('/getIDs', authenticationMiddleware(), function (req, res) {
 
 
 // Get all cars
-router.get('/getCars', authenticationMiddleware(), function (req, res) {
-    console.log("getCars");
+router.get('/getAllCars', authenticationMiddleware(), function (req, res) {
+    console.log("getAllCars");
     var db = require('../db.js');
 
     var car_list = [];
@@ -232,7 +237,7 @@ router.get('/getAllGPS/:sim_real/:selector/:value', authenticationMiddleware(), 
 
     // Determine whether to get data from table data (real cycles) or table simulations (simulated cycles)
     var sim_or_real = req.params.sim_real;
-
+    console.log("Getting from table: "+sim_or_real)
     // Get some driving cycle data
     db.query('SELECT id, filename, vin, totalKM, energyConsumption FROM ' + sim_or_real, function (err, results, fields) {
         // If error occures, throw it
@@ -241,6 +246,7 @@ router.get('/getAllGPS/:sim_real/:selector/:value', authenticationMiddleware(), 
         var tmp = [];
         // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
         for (var i = 0; i < results.length; i++) {
+	    console.log("result")
             if (value == "none") {
                 tmp.push({
                     filename: results[i].filename,
