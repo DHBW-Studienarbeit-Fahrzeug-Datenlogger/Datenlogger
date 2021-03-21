@@ -221,8 +221,9 @@ router.get('/createSimulation', authenticationMiddleware(), function (req, res) 
 
     var text_received = "none";
 
-    PythonShell.run('call_simulation.py', options, function (err, result) {
+    PythonShell.run('call_simulation.py', options, function (err, results) {
         if (err) throw err;
+        console.log(results);
         text_received = results[0];
     });
     res.send([text_received]);

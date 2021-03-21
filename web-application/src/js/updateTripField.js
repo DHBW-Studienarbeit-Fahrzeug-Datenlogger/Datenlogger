@@ -92,14 +92,14 @@ var createSimulation = async function () {
     $("#firstPart").css("display", "")
     $("#secondPart").css("display", "")
     $("#dataPart").css("display", "")
-    $("#VinEingabe").css("display", "none")
+    $("#SimulationDivision").css("display", "none")
     $("#sidebar_navigation_data").css("display", "")
     $("#sidebar_simulation_real").css("display", "none")
 
     // Put values into header selections
     var options = Array.from(document.querySelector("#sim_real_selector").options);
     for (var j = 0; j < options.length; j++) {
-        if (options[j].value == 'simulations') {
+        if (options[j].value == 'simulation') {
             document.querySelector("#sim_real_selector").selectedIndex = j;
         }
     }
