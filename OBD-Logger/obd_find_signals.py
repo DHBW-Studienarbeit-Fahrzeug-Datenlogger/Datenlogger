@@ -16,6 +16,16 @@ Version 1.1
 Description:
     - adding more signals to be checks
     - bugfixes
+-------------------------------------------------------------------
+Update by: Max Vogt
+
+Date: 21.03.2021
+
+Version 1.2
+
+Description:
+    - adding check signals function
+    - adding proper function descriptions
 
 """
 
@@ -39,10 +49,13 @@ from GpsPoller import GpsPoller
 import RPi.GPIO as GPIO
 
 
-def main(path):
+def obd_find_signals():
     """
-    connect to OBD2 Dongle
-    check for available Signals, print them and write to file
+    connects to obd dongle
+    requests information about all potentially necessary signals
+    returns answers individually in hex string format
+    :return: 7 obd answers
+    :rtype: str
     """
     # Necessary variables initialization
     # No connection yet
@@ -52,7 +65,6 @@ def main(path):
 
     # No OBD errors yet
     obd_error = 0
-    filename = "available_obd_signals.txt"
 
     # Try to establish a connection with the OBD dongle
     while not_connected:
@@ -84,6 +96,7 @@ def main(path):
         # mode to log only the GPS and temperature signal
         if obd_error == 10:
             not_connected = False
+            return "0", "0", "0", "0", "0", "0", "0"
 
     if connection.status() == obd.utils.OBDStatus.CAR_CONNECTED and has_connection:
         # Create an OBD command to get Signal Information
@@ -96,20 +109,56 @@ def main(path):
         get_pid09 = OBDCommand("PID09", "Get supported PIDs Service 9 (vehicle information)", b"0900", 4, raw_string)
 
         # Send the command to the OBD and accept the response
-        pid01_1 = connection.query(get_pid01_1, force=True)
-        pid01_2 = connection.query(get_pid01_2, force=True)
-        pid01_3 = connection.query(get_pid01_3, force=True)
-        pid01_4 = connection.query(get_pid01_4, force=True)
-        pid01_5 = connection.query(get_pid01_5, force=True)
-        pid01_6 = connection.query(get_pid01_6, force=True)
-        pid09 = connection.query(get_pid09, force=True)
+        pid01_1 = str(connection.query(get_pid01_1, force=True))
+        pid01_2 = str(connection.query(get_pid01_2, force=True))
+        pid01_3 = str(connection.query(get_pid01_3, force=True))
+        pid01_4 = str(connection.query(get_pid01_4, force=True))
+        pid01_5 = str(connection.query(get_pid01_5, force=True))
+        pid01_6 = str(connection.query(get_pid01_6, force=True))
+        pid09 = str(connection.query(get_pid09, force=True))
+        return pid01_1, pid01_2, pid01_3, pid01_4, pid01_5, pid01_6, pid09
 
-        f = open(path+filename, "w+")
-        f.write("Available signals for gathering current data:\n1: {}\n2: {}\n3: {}\n4: {}\n5: {}\n6:{}\n\n".format(pid01_1, pid01_2, pid01_3, pid01_4, pid01_5, pid01_6))
-        f.write("Available signals for gathering vehicle information:\n {}\n\n".format(pid09))
-        f.close()
-    else:
-        print("no connection, signals won't be tested!")
+
+def check_signal(signal_number, signals):
+    """
+    takes a signals hex string
+    converts into binary string
+    checks whether or not a certain string position is 1
+
+    :param signal_number: string position to be checked
+    :type signal_number: int
+    :param signals: concatenated hex string elements
+    :type signals: str
+    """
+    signals_str = str(format(int(signals), '0>476b'))
+    try:
+        if signals_str[signal_number] == '1':
+            return True
+        else:
+            return False
+    except IndexError:
+        return False
+
+
+def main(path):
+    """
+    connect to OBD2 Dongle
+    check for available Signals, print them and write to file
+    :param path: file storage directory
+    :type path: str
+    """
+
+    filename = "available_obd_signals.txt"
+    pid01_1, pid01_2, pid01_3, pid01_4, pid01_5, pid01_6, pid09 = obd_find_signals()
+    f = open(path + filename, "w+")
+    f.write("Available signals for gathering current data:\n1: {}\n2: {}\n3: {}\n4: {}\n5: {}\n6:{}\n\n".format(pid01_1,
+                                                                                                                pid01_2,
+                                                                                                                pid01_3,
+                                                                                                                pid01_4,
+                                                                                                                pid01_5,
+                                                                                                                pid01_6))
+    f.write("Available signals for gathering vehicle information:\n {}\n\n".format(pid09))
+    f.close()
 
 
 # If script gets executed: execute main function
