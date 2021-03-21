@@ -135,15 +135,15 @@ router.get('/getAddData/:token', authenticationMiddleware(), function (req, res)
 
 // GET the ID for the route from a given filename
 router.get('/getID/:filename', authenticationMiddleware(), function (req, res) {
-    console.log("getID: " + filename);
     var db = require('../db.js');
     var filename = req.params.filename;
+    console.log("getID: " + filename);
     var data = [];
     if(filename === "undefined" || filename === undefined){
-	console.log("filename is undefined");
+	    console.log("filename is undefined");
     }
     else{
-	console.log("Getting filename");
+	    console.log("Getting filename");
         db.query('SELECT id FROM data WHERE filename=?', [filename], function (err, results, fields)  {
             // If error occures, throw it
             if (err) throw err;
@@ -151,6 +151,7 @@ router.get('/getID/:filename', authenticationMiddleware(), function (req, res) {
             // Send back the id from the results if a result is found, otherwise send back 'none'
             if (results.length != 0) {
                 data.push(results[0].id);
+                console.log("Result for ID: "+results[0].id);
             }
         });
     }
@@ -215,7 +216,7 @@ router.get('/createSimulation', authenticationMiddleware(), function (req, res) 
         mode: 'text',
         args: ['hello'],
         pythonOptions: ['-u'],
-        scriptPath: '../python'
+        scriptPath: '../src/python'
     };
 
     var text_received = "none";

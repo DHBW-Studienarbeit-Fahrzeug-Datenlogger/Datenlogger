@@ -111,7 +111,7 @@ var createSimulation = async function () {
         }
     }
 
-    $("#VIN").val(text_received);
+    $("#VIN").val(result[0]);
 
     // Show dashboard maps
     document.getElementById('VINButton').click()
