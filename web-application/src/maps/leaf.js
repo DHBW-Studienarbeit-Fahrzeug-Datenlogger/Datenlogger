@@ -333,7 +333,7 @@ var printMarkers = async function(filename, nof) {
             let allData = await response2.json();
 
             // Get the id for the drive cycle
-	    
+            console.log("Get ID for cycle: " + filename[g])
             let response3 = await fetch("/getID/" + filename[g], {
                 credentials: 'same-origin'
             });

@@ -76,27 +76,26 @@ var getOptions_sim = async function () {
 }
 
 // Function to create the simulation
-var createSimulation = function () {
+var createSimulation = async function () {
     // Call python function
-    let {PythonShell} = require('python-shell')
-
-    var options = {
-        // Each line of data ending with '\n' is emitted as a message
-        mode: 'text',
-        args: ['hello'],
-        pythonOptions: ['-u'],
-        scriptPath: '../python'
-    };
-
-    var text_received = "none";
-
-    PythonShell.run('call_simulation.py', options, function (err, result) {
-        if (err) throw err;
-        text_received = results[0];
+    let response = await fetch("/createSimulation", {
+        credentials: 'same-origin'
     });
+    let result = await response.json();
 
     // Get id of created route
     var id = 0;
+
+    // Show right site
+    $("#headerVinEingabe").css("display", "")
+    $("#sidebar").css("display", "")
+    $("#firstPart").css("display", "")
+    $("#secondPart").css("display", "")
+    $("#dataPart").css("display", "")
+    $("#VinEingabe").css("display", "none")
+    $("#sidebar_navigation_data").css("display", "")
+    $("#sidebar_simulation_real").css("display", "none")
+
     // Put values into header selections
     var options = Array.from(document.querySelector("#sim_real_selector").options);
     for (var j = 0; j < options.length; j++) {

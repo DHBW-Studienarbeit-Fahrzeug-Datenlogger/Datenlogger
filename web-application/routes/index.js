@@ -139,7 +139,7 @@ router.get('/getID/:filename', authenticationMiddleware(), function (req, res) {
     var db = require('../db.js');
     var filename = req.params.filename;
     var data = [];
-    if(filename === "undefined"){
+    if(filename === "undefined" || filename === undefined){
 	console.log("filename is undefined");
     }
     else{
@@ -205,6 +205,29 @@ router.get('/getAllCars', authenticationMiddleware(), function (req, res) {
 });
 
 
+// Create the simulation and get the ID of the created route
+router.get('/createSimulation', authenticationMiddleware(), function (req, res) {
+    console.log("Creating simulation");
+    let { PythonShell } = require('python-shell')
+
+    var options = {
+        // Each line of data ending with '\n' is emitted as a message
+        mode: 'text',
+        args: ['hello'],
+        pythonOptions: ['-u'],
+        scriptPath: '../python'
+    };
+
+    var text_received = "none";
+
+    PythonShell.run('call_simulation.py', options, function (err, result) {
+        if (err) throw err;
+        text_received = results[0];
+    });
+    res.send([text_received]);
+});
+
+
 
 // GET the gps data of the given filename
 router.get('/getGPS/:token', authenticationMiddleware(), function (req, res) {
@@ -246,7 +269,7 @@ router.get('/getAllGPS/:sim_real/:selector/:value', authenticationMiddleware(), 
         var tmp = [];
         // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
         for (var i = 0; i < results.length; i++) {
-	    console.log("result")
+	        console.log("result")
             if (value == "none") {
                 tmp.push({
                     filename: results[i].filename,
@@ -322,6 +345,8 @@ router.get('/getAllGPS/:sim_real/:selector/:value', authenticationMiddleware(), 
             delete data[i]['COMMANDED_EQUIV_RATIO'];
             delete data[i]['SPEED'];
             delete data[i]['ENGINE_LOAD'];
+            // Add filename to dictionary
+            data[i]['filename'] = tmp[i].filename;
             // Calculate the average trip length and the total energy consumption
             averageTripLength += tmp[i].totalKM / tmp.length;
             if(longestTrip <= tmp[i].totalKM) {
