@@ -32,7 +32,7 @@ def get_field(table, name):
             if field == name:
                 field_counter = i
                 break
-            i = i+1
+            i = i + 1
         if field_counter is not None:
             data = []
             for i in range(len(table)):
@@ -47,25 +47,25 @@ def get_entry(table, identifier):
         (one row of table)
         returns empty list if it didn't find matching column
         """
-    i=0
-    j=0
+    i = 0
+    j = 0
     for row in table:
         for field in row:
             if field == identifier:
-                return row , i, j
+                return row, i, j
             j = j + 1
         i = i + 1
-    return None , None, None
+    return None, None, None
 
 
 def read_table_from_database(cursor, table_name):
-    """"
+    """
     returns nested list of all entries in database
     :param cursor: cursor to navigate database
     :type cursor: mysql-
     :param table_name: name of table to be retrieved from database
     :type table_name: str
-    """"
+    """
 
     cursor.execute("SELECT name from" + table_name)
     row_list = []
@@ -76,30 +76,38 @@ def read_table_from_database(cursor, table_name):
     return row_list
 
 
-def driving_simulation(velocity, road_angle_rad, rolling_friction_factor, mass, mass_factor_rotations, projected_area, cw_factor, time):
+def driving_simulation(velocity, road_angle_rad, rolling_friction_factor, mass, mass_factor_rotations, projected_area,
+                       cw_factor, time):
+    """
+    calculated power and energy data using driving resistance method
+    at specific points in time
+    """
     # constants, not vehicle or route dependent
     air_density = 1.2041
     gravitational_constant = 9.81
 
     l = len(velocity)
     acceleration = np.zeros(l)
-    for i in range(l-1):
-        acceleration[i] = (velocity[i+1] - velocity[i])/ (time[i+1] - time[i])
+    for i in range(l - 1):
+        acceleration[i] = (velocity[i + 1] - velocity[i]) / (time[i + 1] - time[i])
 
     force_roll = rolling_friction_factor * np.cos(road_angle_rad)
     force_pitch = np.sin(road_angle_rad) * mass * gravitational_constant
     force_inertia = mass * 9.81 * mass_factor_rotations * acceleration
-    force_air_resistance = velocity**2 * projected_area * cw_factor * air_density
+    force_air_resistance = velocity ** 2 * projected_area * cw_factor * air_density
 
     force_drive = force_air_resistance + force_pitch + force_inertia + force_roll
     power_drive = force_drive[:] * velocity[:]
     energy_drive = np.zeros(l)
-    for i in range(l-1):
-        energy_drive[i+1] = energy_drive[i] + power_drive[i] * (time[i+1] - time[i])
+    for i in range(l - 1):
+        energy_drive[i + 1] = energy_drive[i] + power_drive[i] * (time[i + 1] - time[i])
     return power_drive, energy_drive
 
 
 def heat_model(t_outside, t_inside, area, thickness, alpha_i, alpha_o, lambda_t, time):
+    """
+    calculated power and energy data using heat model at specific points in time
+    """
     l = len(time)
     t_diff = t_outside - t_inside
     r_th_in = 1 / (alpha_i * area)
@@ -108,9 +116,9 @@ def heat_model(t_outside, t_inside, area, thickness, alpha_i, alpha_o, lambda_t,
     r_th = r_th_in + r_th_out + r_th_transfer
     power_heat = t_diff / r_th
     energy_heat = np.zeros(l)
-    for i in range(l-1):
-        energy_heat[i+1] = energy_heat[i] + power_heat[i] * (time[i+1] - time[i])
-    return  power_heat, energy_heat
+    for i in range(l - 1):
+        energy_heat[i + 1] = energy_heat[i] + power_heat[i] * (time[i + 1] - time[i])
+    return power_heat, energy_heat
 
 
 def virtual_drive(car_id, route_id):
@@ -150,8 +158,8 @@ def virtual_drive(car_id, route_id):
     route_table = read_table_from_database(cursor=cursor, table_name="data")
     route_information = get_entry(table=route_table, identifier=route_id)
 
-    height_profile_file=route_information[11]
-    data_file=route_information[0]
+    height_profile_file = route_information[11]
+    data_file = route_information[0]
 
     with open(height_profile_file) as json_file:
         height_profile_dict = json.load(json_file)
@@ -176,7 +184,7 @@ def virtual_drive(car_id, route_id):
     alpha_o = car[14]
     lambda_trans = car[12]
     thickness = car[15]
-    power_drive, energy_drive =  driving_simulation(
+    power_drive, energy_drive = driving_simulation(
         velocity=velocity,
         road_angle_rad=road_angle_rad,
         rolling_friction_factor=rolling_friction_factor,
@@ -210,7 +218,7 @@ def virtual_drive(car_id, route_id):
     ### Insert the driven route into the table
     cursor.execute(
         "INSERT INTO  simulations ( filename_raw_data, date, starttime, totalKM, endtime, VIN, fuelConsumption, " \
-        + "energyConsumption, endLat, endLong, endDate, filename_height_profile) VALUES ('"
+        + "energyConsumption, endLat, endLong, endDate, filename_height_profile, car_id, filename_energy_data) VALUES ('"
         + str(route_information[0]) \
         + "', '" + str(route_information[1]) + "', '" + str(route_information[2]) \
         + "', '" + str(route_information[3]) + "', '" + str(route_information[4]) \
