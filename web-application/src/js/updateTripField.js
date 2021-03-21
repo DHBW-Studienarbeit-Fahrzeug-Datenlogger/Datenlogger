@@ -82,6 +82,7 @@ var createSimulation = async function () {
         credentials: 'same-origin'
     });
     let result = await response.json();
+    console.log(result)
 
     // Get id of created route
     var id = 0;

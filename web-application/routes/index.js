@@ -216,17 +216,17 @@ router.get('/createSimulation', authenticationMiddleware(), function (req, res) 
         mode: 'text',
         args: ['hello'],
         pythonOptions: ['-u'],
-        scriptPath: '../src/python'
+        scriptPath: 'src/python'
     };
 
-    var text_received = "none";
+    var result = [];
 
     PythonShell.run('call_simulation.py', options, function (err, results) {
         if (err) throw err;
         console.log(results);
-        text_received = results[0];
+        result.push(results[0]);
     });
-    res.send([text_received]);
+    res.send(result);
 });
 
 

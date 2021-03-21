@@ -338,6 +338,8 @@ var printMarkers = async function(filename, nof) {
                 credentials: 'same-origin'
             });
             let id = await response3.json();
+            console.log("ID:")
+            console.log(id)
 	    
             markers = await removeNull(markers);
             allMarkers.push(markers)
