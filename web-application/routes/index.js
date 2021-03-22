@@ -210,14 +210,17 @@ router.get('/getAllCars', authenticationMiddleware(), function (req, res) {
 
 
 // Create the simulation and get the ID of the created route
-router.get('/createSimulation', authenticationMiddleware(), function (req, res) {
+router.get('/createSimulation/:car_id/:route_id', authenticationMiddleware(), function (req, res) {
     console.log("Creating simulation");
     let { PythonShell } = require('python-shell')
+
+    var car_id = req.params.car_id;
+    var route_id = req.params.route_id;
 
     var options = {
         // Each line of data ending with '\n' is emitted as a message
         mode: 'text',
-        args: ['hello'],
+        args: [car_id, route_id],
         pythonOptions: ['-u'],
         scriptPath: 'src/python'
     };

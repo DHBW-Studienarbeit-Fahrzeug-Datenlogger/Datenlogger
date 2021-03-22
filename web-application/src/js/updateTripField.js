@@ -77,15 +77,16 @@ var getOptions_sim = async function () {
 
 // Function to create the simulation
 var createSimulation = async function () {
+    // Get selected car_id and route_id
+    var car_name = document.getElementById('car_select').value;
+    var route_id = document.getElementById('id_select').value;
+
     // Call python function
-    let response = await fetch("/createSimulation", {
+    let response = await fetch("/createSimulation/"+car_name+"/"+route_id, {
         credentials: 'same-origin'
     });
     let result = await response.json();
     console.log(result)
-
-    // Get id of created route
-    var id = 0;
 
     // Show right site
     $("#headerVinEingabe").css("display", "")
