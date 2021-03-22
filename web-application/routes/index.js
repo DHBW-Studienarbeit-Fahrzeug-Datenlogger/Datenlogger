@@ -138,9 +138,10 @@ router.get('/getID/:filename', authenticationMiddleware(), function (req, res) {
     var db = require('../db.js');
     var filename = req.params.filename;
     console.log("getID: " + filename);
-    var data = [];
+
     if(filename === "undefined" || filename === undefined){
-	    console.log("filename is undefined");
+        console.log("filename is undefined");
+        res.send(["Undefined"])
     }
     else{
 	    console.log("Getting filename");
@@ -150,12 +151,14 @@ router.get('/getID/:filename', authenticationMiddleware(), function (req, res) {
 
             // Send back the id from the results if a result is found, otherwise send back 'none'
             if (results.length != 0) {
-                data.push(results[0].id);
-                console.log("Result for ID: "+results[0].id);
+                console.log("Result for ID: " + results[0].id);
+                res.send([results[0].id]);
+            }
+            else {
+                res.send(["No ID found"])
             }
         });
     }
-    res.send(data);
     console.log("getID ended");
 });
 
@@ -223,10 +226,8 @@ router.get('/createSimulation', authenticationMiddleware(), function (req, res) 
 
     PythonShell.run('call_simulation.py', options, function (err, results) {
         if (err) throw err;
-        console.log(results);
-        result.push(results[0]);
+        res.send(result);
     });
-    res.send(result);
 });
 
 
