@@ -14,9 +14,9 @@ import sys
 import mysql.connector as mysql_connector
 import _env
 
-# Import simulation script
-sys.path.append('../../../MySQL-server')
-from driving_simulation import virtual_drive
+# Import simulation script (path from the executing directory: webapplication)
+sys.path.append('../MySQL-server')
+import driving_simulation
 
 
 ### Get arguments
@@ -25,7 +25,7 @@ route_id = sys.argv[2]
 
 
 ### Call virtual_drive() from simulation script
-virtual_drive(car_id, route_id)
+driving_simulation.virtual_drive(car_id, route_id)
 
 
 ### Extract newest ID from table simulation
