@@ -67,7 +67,7 @@ def read_table_from_database(cursor, table_name):
     :type table_name: str
     """
 
-    cursor.execute("SELECT name FROM " + table_name)
+    cursor.execute("SELECT * from" + table_name)
     row_list = []
 
     for element in cursor:
