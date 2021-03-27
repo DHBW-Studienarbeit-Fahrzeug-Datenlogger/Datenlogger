@@ -153,7 +153,7 @@ def virtual_drive(car_id, route_id):
         # Create execution object
     cursor = db.cursor()
     car_table = read_table_from_database(cursor=cursor, table_name="cars")
-    car = get_entry(table=car_table, identifier="car_id")
+    car = get_entry(table=car_table, identifier=car_id)
 
     route_table = read_table_from_database(cursor=cursor, table_name="data")
     route_information = get_entry(table=route_table, identifier=route_id)
