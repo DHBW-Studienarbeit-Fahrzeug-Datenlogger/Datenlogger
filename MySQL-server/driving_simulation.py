@@ -67,7 +67,7 @@ def read_table_from_database(cursor, table_name):
     :type table_name: str
     """
 
-    cursor.execute("SELECT * FROM " + table_name)
+    cursor.execute("SELECT * from" + table_name)
     row_list = []
 
     for element in cursor:
@@ -153,10 +153,10 @@ def virtual_drive(car_id, route_id):
         # Create execution object
     cursor = db.cursor()
     car_table = read_table_from_database(cursor=cursor, table_name="cars")
-    car = get_entry(table=car_table, identifier=car_id)
+    car, rowcount, elementcount = get_entry(table=car_table, identifier=car_id)
 
     route_table = read_table_from_database(cursor=cursor, table_name="data")
-    route_information = get_entry(table=route_table, identifier=route_id)
+    route_information, rowcount, elementcount = get_entry(table=route_table, identifier=route_id)
 
     height_profile_file = route_information[11]
     data_file = route_information[0]
