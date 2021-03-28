@@ -1,10 +1,7 @@
 """
 Created by: Maximilian Vogt
 Version: 1.0
-
 Description:
-
-
 """
 import numpy as np
 import mysql.connector as mysql_connector
@@ -99,10 +96,10 @@ def driving_simulation(velocity, road_angle_rad, rolling_friction_factor, mass, 
     force_roll = rolling_friction_factor * np.cos(road_angle_rad)
     force_pitch = np.sin(road_angle_rad) * mass * gravitational_constant
     force_inertia = mass * 9.81 * mass_factor_rotations * acceleration
-    force_air_resistance = velocity ** 2 * projected_area * cw_factor * air_density
+    force_air_resistance = (velocity ** 2) * projected_area * cw_factor * air_density
 
     force_drive = force_air_resistance + force_pitch + force_inertia + force_roll
-    power_drive = force_drive[:] * velocity[:]
+    power_drive = force_drive * velocity
     energy_drive = np.zeros(l)
     for i in range(l - 1):
         energy_drive[i + 1] = energy_drive[i] + power_drive[i] * (time[i + 1] - time[i])
@@ -131,10 +128,8 @@ def virtual_drive(car_id, route_id):
     select car_id and route_id
     simulate drive of specific car on specific route
     save energy data to new table containing all route data and additionally car_id and file containing energy data
-
     :param car_id: String identifieing car in cars table
     :param route_id: String identifieing route in data table
-
     """
     try:
         db = mysql_connector.connect(
@@ -190,24 +185,24 @@ def virtual_drive(car_id, route_id):
     lambda_trans = car[12]
     thickness = car[15]
     power_drive, energy_drive = driving_simulation(
-        velocity=velocity,
-        road_angle_rad=road_angle_rad,
-        rolling_friction_factor=rolling_friction_factor,
-        mass=mass,
-        mass_factor_rotations=mass_factor_rotations,
-        projected_area=projected_area,
-        cw_factor=cw_factor,
-        time=time
+        velocity=np.array(velocity),
+        road_angle_rad=np.array(road_angle_rad),
+        rolling_friction_factor=np.array(rolling_friction_factor),
+        mass=np.array(mass),
+        mass_factor_rotations=np.array(mass_factor_rotations),
+        projected_area=np.array(projected_area),
+        cw_factor=np.array(cw_factor),
+        time=np.array(time)
     )
     power_heat, energy_heat = heat_model(
-        t_outside=t_outside,
-        t_inside=t_inside,
-        area=area,
-        thickness=thickness,
-        alpha_i=alpha_i,
-        alpha_o=alpha_o,
-        lambda_t=lambda_trans,
-        time=time
+        t_outside=np.array(t_outside),
+        t_inside=np.array(t_inside),
+        area=np.array(area),
+        thickness=np.array(thickness),
+        alpha_i=np.array(alpha_i),
+        alpha_o=np.array(alpha_o),
+        lambda_t=np.array(lambda_trans),
+        time=np.array(time)
     )
     energy_data = {
         "power_heat": power_heat.tolist(),
