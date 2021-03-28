@@ -25,7 +25,7 @@ route_id = sys.argv[2]
 
 
 ### Call virtual_drive() from simulation script
-driving_simulation.virtual_drive(car_id, route_id)
+driving_simulation.virtual_drive(car_id, int(route_id))
 
 
 ### Extract newest ID from table simulation

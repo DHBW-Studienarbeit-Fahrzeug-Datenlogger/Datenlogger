@@ -14,6 +14,9 @@ import requests
 import json
 
 
+PATH_TO_FILES = "../../datafiles/"
+
+
 def get_field(table, name):
     """
     returns all entries of one field type
@@ -49,6 +52,8 @@ def get_entry(table, identifier):
         """
     i = 0
     j = 0
+    print(table)
+    print(identifier)
     for row in table:
         for field in row:
             if field == identifier:
@@ -158,19 +163,19 @@ def virtual_drive(car_id, route_id):
     route_table = read_table_from_database(cursor=cursor, table_name="data")
     route_information, rowcount, elementcount = get_entry(table=route_table, identifier=route_id)
 
-    height_profile_file = route_information[11]
-    data_file = route_information[0]
+    height_profile_file = route_information[12]
+    data_file = route_information[1]
 
-    with open(height_profile_file) as json_file:
+    with open(PATH_TO_FILES + height_profile_file) as json_file:
         height_profile_dict = json.load(json_file)
-    with open(data_file) as json_file:
+    with open(PATH_TO_FILES + data_file) as json_file:
         route_data_dict = json.load(json_file)
 
     road_angle_rad = height_profile_dict["angle_rad"]
     velocity = route_data_dict["SPEED"]
     time = route_data_dict["TIME"]
     t_outside = route_data_dict["AMBIANT_AIR_TEMP"]
-    t_inside = route_data_dict["INSIDE_AIR_TEMP"]
+    t_inside = route_data_dict["INTERNAL_AIR_TEMP"]
     consumption = car[2]
     capacity = car[3]
     max_power = car[4]
@@ -213,7 +218,7 @@ def virtual_drive(car_id, route_id):
 
     # write information to json file
     filename_energy_data = route_information[0][:-4] + "_energy_data.json"
-    json.dump(energy_data, open(filename_energy_data, "w"), indent=4)
+    json.dump(energy_data, open(PATH_TO_FILES + filename_energy_data, "w"), indent=4)
 
     ### Insert the driven route into the table
     cursor.execute(
@@ -233,6 +238,6 @@ def virtual_drive(car_id, route_id):
 
 if __name__ == '__main__':
     virtual_drive(
-        car_id=1,
-        route_id=0
+        car_id="c4picasso",
+        route_id=22
     )
