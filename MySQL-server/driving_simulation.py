@@ -167,10 +167,15 @@ def virtual_drive(car_id, route_id):
         route_data_dict = json.load(json_file)
 
     road_angle_rad = height_profile_dict["angle_rad"]
+    zero_handling(road_angle_rad)
     velocity = route_data_dict["SPEED"]
+    zero_handling(velocity)
     time = route_data_dict["TIME"]
+    zero_handling(time)
     t_outside = route_data_dict["AMBIANT_AIR_TEMP"]
+    zero_handling(t_outside)
     t_inside = route_data_dict["INTERNAL_AIR_TEMP"]
+    zero_handling(t_inside)
     consumption = car[2]
     capacity = car[3]
     max_power = car[4]
@@ -229,6 +234,32 @@ def virtual_drive(car_id, route_id):
         + "', '" + str(car_id) \
         + "', '" + str(filename_energy_data) + "'")
     db.commit()
+
+
+def zero_handling(iterable, verbose=0):
+    # if first element = 0
+    if iterable[0] == 0.0:
+        count_up = 0
+        while True:
+            count_up += 1
+            if iterable[count_up] != 0.0:
+                iterable[0] = iterable[count_up]
+                break
+
+    # every other element
+    for i in range(len(iterable) - 1):
+        if iterable[i + 1] == 0.0:
+            count_up = 0
+            while True:
+                count_up += 1
+                try:
+                    if iterable[i + 1 + count_up] != 0.0:
+                        iterable[i + 1] = (iterable[i+1+count_up] * count_up + iterable[i]) / (count_up + 1)
+                        print_debug("zero handled", verbose=verbose)
+                        break
+                except IndexError:
+                    iterable[i+1] = iterable[i]
+                    break
 
 
 if __name__ == '__main__':
