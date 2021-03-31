@@ -167,14 +167,53 @@ def virtual_drive(car_id, route_id):
         route_data_dict = json.load(json_file)
 
     road_angle_rad = height_profile_dict["angle_rad"]
-    zero_handling(road_angle_rad)
     velocity = route_data_dict["SPEED"]
-    zero_handling(velocity)
     time = route_data_dict["TIME"]
-    zero_handling(time)
     t_outside = route_data_dict["AMBIANT_AIR_TEMP"]
-    zero_handling(t_outside)
     t_inside = route_data_dict["INTERNAL_AIR_TEMP"]
+    # convert all data to float
+    # fill up empty elements with zeros
+    for i in range(len(time)):
+        try:
+            road_angle_rad[i] = float(road_angle_rad[i])
+        except IndexError:
+            road_angle_rad.append(0.0)
+        except TypeError or ValueError:
+            road_angle_rad[i] = 0.0
+
+        try:
+            velocity[i] = float(velocity[i])
+        except IndexError:
+            velocity.append(0.0)
+        except ValueError:
+            velocity[i] = 0.0
+
+        try:
+            time[i] = float(time[i])
+        except IndexError:
+            time.append(0.0)
+        except ValueError:
+            time[i] = 0.0
+
+        try:
+            t_outside[i] = float(t_outside[i])
+        except IndexError:
+            t_outside.append(0.0)
+        except ValueError:
+            t_outside[i] = 0.0
+
+        try:
+            t_inside[i] = float(t_inside[i])
+        except IndexError:
+            t_inside.append(0.0)
+        except ValueError:
+            t_inside[i] = 0.0
+
+    # handle zeros
+    zero_handling(road_angle_rad)
+    zero_handling(velocity)
+    zero_handling(time)
+    zero_handling(t_outside)
     zero_handling(t_inside)
     consumption = car[2]
     capacity = car[3]
@@ -239,12 +278,12 @@ def virtual_drive(car_id, route_id):
 def zero_handling(iterable, verbose=0):
     # if first element = 0
     if iterable[0] == 0.0:
-        count_up = 0
-        while True:
-            count_up += 1
-            if iterable[count_up] != 0.0:
-                iterable[0] = iterable[count_up]
+        for i in range(len(iterable) - 1):
+            if iterable[i+1] != 0.0:
+                iterable[0] = iterable[i+1]
                 break
+            if i == len(iterable) - 1:
+                return
 
     # every other element
     for i in range(len(iterable) - 1):
