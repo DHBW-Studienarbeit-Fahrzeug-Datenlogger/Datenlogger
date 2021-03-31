@@ -263,7 +263,7 @@ def virtual_drive(car_id, route_id):
 
     ### Insert the driven route into the table
     cursor.execute(
-        "INSERT INTO  simulations ( filename_raw_data, date, starttime, totalKM, endtime, VIN, fuelConsumption, " \
+        "INSERT INTO  simulation ( filename_raw_data, date, starttime, totalKM, endtime, VIN, fuelConsumption, " \
         + "energyConsumption, endLat, endLong, endDate, filename_height_profile, car_id, filename_energy_data) VALUES ('"
         + str(route_information[0]) \
         + "', '" + str(route_information[1]) + "', '" + str(route_information[2]) \
