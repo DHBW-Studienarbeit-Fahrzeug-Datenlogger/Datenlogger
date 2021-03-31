@@ -258,7 +258,7 @@ def virtual_drive(car_id, route_id):
     }
 
     # write information to json file
-    filename_energy_data = route_information[0][:-4] + "_energy_data.json"
+    filename_energy_data = route_information[1][:-4] + "_energy_data.json"
     json.dump(energy_data, open(PATH_TO_FILES + filename_energy_data, "w"), indent=4)
 
     ### Insert the driven route into the table
