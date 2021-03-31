@@ -255,7 +255,6 @@ def zero_handling(iterable, verbose=0):
                 try:
                     if iterable[i + 1 + count_up] != 0.0:
                         iterable[i + 1] = (iterable[i+1+count_up] * count_up + iterable[i]) / (count_up + 1)
-                        print_debug("zero handled", verbose=verbose)
                         break
                 except IndexError:
                     iterable[i+1] = iterable[i]
