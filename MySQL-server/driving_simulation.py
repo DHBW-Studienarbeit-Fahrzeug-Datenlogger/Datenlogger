@@ -270,10 +270,10 @@ def virtual_drive(car_id, route_id):
         + "', '" + str(route_information[3]) + "', '" + str(route_information[4]) \
         + "', '" + str(route_information[5]) + "', '" + str(route_information[6]) \
         + "', '" + str(route_information[7]) + "', '" + str(route_information[8]) \
-        + "', '" + str(route_information[8]) \
+        + "', '" + str(route_information[9]) \
         + "', '" + str(route_information[10]) + "', '" + str(route_information[11]) \
         + "', '" + str(car_id) \
-        + "', '" + str(filename_energy_data) + "'")
+        + "', '" + str(filename_energy_data) + "')")
     db.commit()
 
 
