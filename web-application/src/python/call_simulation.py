@@ -58,7 +58,7 @@ cursor.execute("SELECT id FROM simulation")
 ID = 0
 for id_count in cursor:
     if id_count[0] > ID:
-        ID = id_count
+        ID = id_count[0]
 
 # Close the connection
 cursor.close()
