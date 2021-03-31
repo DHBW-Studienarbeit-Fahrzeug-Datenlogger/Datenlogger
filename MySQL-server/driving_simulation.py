@@ -308,7 +308,7 @@ def zero_handling(iterable, verbose=0):
 
 def print_file(text):
     with open("logfile.txt", "a") as file:
-        file.write(text+"\n")
+        file.write(str(text)+"\n")
 
 if __name__ == '__main__':
     virtual_drive(
