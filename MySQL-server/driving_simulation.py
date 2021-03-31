@@ -9,6 +9,7 @@ import _env
 import csv
 import requests
 import json
+import datetime
 
 
 PATH_TO_FILES = "../../datafiles/"
@@ -258,7 +259,7 @@ def virtual_drive(car_id, route_id):
     }
 
     # write information to json file
-    filename_energy_data = route_information[1][:-4] + "_energy_data.json"
+    filename_energy_data = datetime.datetime.now().strftime("%y_%m_%d_%H:%M:%S_") + "energy_data.json"
     json.dump(energy_data, open(PATH_TO_FILES + filename_energy_data, "w"), indent=4)
 
     ### Insert the driven route into the table
