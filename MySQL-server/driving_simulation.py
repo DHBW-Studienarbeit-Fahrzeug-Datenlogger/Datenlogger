@@ -208,6 +208,8 @@ def virtual_drive(car_id, route_id):
             t_inside.append(0.0)
         except ValueError:
             t_inside[i] = 0.0
+        except TypeError:
+            t_inside[i] = 0.0
 
     # handle zeros
     zero_handling(road_angle_rad)
