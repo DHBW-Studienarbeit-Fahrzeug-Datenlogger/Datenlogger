@@ -265,13 +265,13 @@ def virtual_drive(car_id, route_id):
     cursor.execute(
         "INSERT INTO  simulation ( filename, date, starttime, totalKM, endtime, VIN, fuelConsumption, " \
         + "energyConsumption, endLat, endLong, endDate, additional_file, id_car, id_route, filename_energy) VALUES ('"
-        + str(route_information[0]) \
-        + "', '" + str(route_information[1]) + "', '" + str(route_information[2]) \
-        + "', '" + str(route_information[3]) + "', '" + str(route_information[4]) \
-        + "', '" + str(route_information[5]) + "', '" + str(route_information[6]) \
-        + "', '" + str(route_information[7]) + "', '" + str(route_information[8]) \
-        + "', '" + str(route_information[9]) \
-        + "', '" + str(route_information[10]) + "', '" + str(route_information[11]) \
+        + str(route_information[1]) \
+        + "', '" + str(route_information[2]) + "', '" + str(route_information[3]) \
+        + "', '" + str(route_information[4]) + "', '" + str(route_information[5]) \
+        + "', '" + str(route_information[6]) + "', '" + str(route_information[7]) \
+        + "', '" + str(route_information[8]) + "', '" + str(route_information[9]) \
+        + "', '" + str(route_information[10]) \
+        + "', '" + str(route_information[11]) + "', '" + str(route_information[12]) \
         + "', '" + str(car_id) + "', '" + str(route_id) \
         + "', '" + str(filename_energy_data) + "')")
     db.commit()
