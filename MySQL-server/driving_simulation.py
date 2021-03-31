@@ -277,9 +277,9 @@ def virtual_drive(car_id, route_id):
 
 def zero_handling(iterable, verbose=0):
     # if first element = 0
-    if iterable[0] == 0.0:
+    if iterable[0] == 0.0 or str(type(iterable[0])) == "<class 'NoneType'>":
         for i in range(len(iterable) - 1):
-            if iterable[i+1] != 0.0:
+            if iterable[i+1] != 0.0 and str(type(iterable[i+1])) != "<class 'NoneType'>":
                 iterable[0] = iterable[i+1]
                 break
             if i == len(iterable) - 1:
@@ -287,12 +287,12 @@ def zero_handling(iterable, verbose=0):
 
     # every other element
     for i in range(len(iterable) - 1):
-        if iterable[i + 1] == 0.0:
+        if iterable[i + 1] == 0.0 or str(type(iterable[i + 1])) == "<class 'NoneType'>":
             count_up = 0
             while True:
                 count_up += 1
                 try:
-                    if iterable[i + 1 + count_up] != 0.0:
+                    if iterable[i + 1 + count_up] != 0.0 and str(type(iterable[i + 1])) != "<class 'NoneType'>":
                         iterable[i + 1] = (iterable[i+1+count_up] * count_up + iterable[i]) / (count_up + 1)
                         break
                 except IndexError:
