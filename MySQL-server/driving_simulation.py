@@ -9,6 +9,7 @@ import _env
 import csv
 import requests
 import json
+import datetime
 
 
 PATH_TO_FILES = "../../datafiles/"
@@ -208,6 +209,8 @@ def virtual_drive(car_id, route_id):
             t_inside.append(0.0)
         except ValueError:
             t_inside[i] = 0.0
+        except TypeError:
+            t_inside[i] = 0.0
 
     # handle zeros
     zero_handling(road_angle_rad)
@@ -256,29 +259,27 @@ def virtual_drive(car_id, route_id):
     }
 
     # write information to json file
-    filename_energy_data = route_information[0][:-4] + "_energy_data.json"
+    filename_energy_data = datetime.datetime.now().strftime("%y_%m_%d_%H:%M:%S_") + "energy_data.json"
     json.dump(energy_data, open(PATH_TO_FILES + filename_energy_data, "w"), indent=4)
 
     ### Insert the driven route into the table
     cursor.execute(
-        "INSERT INTO  simulations ( filename_raw_data, date, starttime, totalKM, endtime, VIN, fuelConsumption, " \
-        + "energyConsumption, endLat, endLong, endDate, filename_height_profile, car_id, filename_energy_data) VALUES ('"
-        + str(route_information[0]) \
-        + "', '" + str(route_information[1]) + "', '" + str(route_information[2]) \
-        + "', '" + str(route_information[3]) + "', '" + str(route_information[4]) \
-        + "', '" + str(route_information[5]) + "', '" + str(route_information[6]) \
-        + "', '" + str(route_information[7]) + "', '" + str(route_information[8]) \
-        + "', '" + str(route_information[8]) \
-        + "', '" + str(route_information[10]) + "', '" + str(route_information[11]) \
-        + "', '" + str(car_id) \
-        + "', '" + str(filename_energy_data) + "'")
+        "INSERT INTO  simulation ( filename, date, starttime, totalKM, endtime, VIN, fuelConsumption, " \
+        + "energyConsumption, endLat, endLong, endDate, additional_file, id_car, id_route, filename_energy) VALUES ('"
+        + str(route_information[1]) \
+        + "', '" + str(route_information[2]) + "', '" + str(route_information[3]) \
+        + "', '" + str(route_information[4]) + "', '" + str(route_information[5]) \
+        + "', '" + str(route_information[6]) + "', '" + str(route_information[7]) \
+        + "', '" + str(route_information[8]) + "', '" + str(route_information[9]) \
+        + "', '" + str(route_information[10]) \
+        + "', '" + str(route_information[11]) + "', '" + str(route_information[12]) \
+        + "', '" + str(car_id) + "', '" + str(route_id) \
+        + "', '" + str(filename_energy_data) + "')")
     db.commit()
 
 
 def zero_handling(iterable, verbose=0):
     # if first element = 0
-    print_file("ZeroHandling")
-    print_file("First element class: "+str(type(iterable[0])))
     if iterable[0] == 0.0 or str(type(iterable[0])) == "<class 'NoneType'>":
         for i in range(len(iterable) - 1):
             if iterable[i+1] != 0.0 and str(type(iterable[i+1])) != "<class 'NoneType'>":
@@ -290,13 +291,11 @@ def zero_handling(iterable, verbose=0):
     # every other element
     for i in range(len(iterable) - 1):
         if iterable[i + 1] == 0.0 or str(type(iterable[i + 1])) == "<class 'NoneType'>":
-            print_file(iterable[i+1])
             count_up = 0
             while True:
                 count_up += 1
                 try:
                     if iterable[i + 1 + count_up] != 0.0 and str(type(iterable[i + 1])) != "<class 'NoneType'>":
-                        print_file("Valid value: "+iterable[i + 1 + count_up])
                         iterable[i + 1] = (iterable[i+1+count_up] * count_up + iterable[i]) / (count_up + 1)
                         break
                 except IndexError:
@@ -306,7 +305,7 @@ def zero_handling(iterable, verbose=0):
 
 def print_file(text):
     with open("logfile.txt", "a") as file:
-        file.write(text+"\n")
+        file.write(str(text)+"\n")
 
 if __name__ == '__main__':
     virtual_drive(
