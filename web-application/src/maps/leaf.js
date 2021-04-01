@@ -52,10 +52,19 @@ var printAllMarkers = async function() {
         //console.log(markers[i].GPS_Long.length)
 	
         // Get the id for the drive cycle
-        let response3 = await fetch("/getID/" + markers[i].filename, {
-            credentials: 'same-origin'
-        });
-        let id = await response3.json();
+        if (sim_real == "data") {
+            let response3 = await fetch("/getID/" + sim_real + "/" + + markers[i].filename, {
+                credentials: 'same-origin'
+            });
+            var id = await response3.json();
+        }
+        else if (sim_real == "simulation") {
+            let response3 = await fetch("/getID/" + sim_real + "/" + + markers[i].filename_energy, {
+                credentials: 'same-origin'
+            });
+            var id = await response3.json();
+        }
+        
 	
         for (let g = 0; g < markers[i].GPS_Long.length; g++) {
             if(!(markers[i].GPS_Long[g] === null || markers[i].GPS_Lat[g] === null)) {

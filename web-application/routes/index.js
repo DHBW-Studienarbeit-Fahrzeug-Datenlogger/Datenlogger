@@ -134,8 +134,9 @@ router.get('/getAddData/:token', authenticationMiddleware(), function (req, res)
 
 
 // GET the ID for the route from a given filename
-router.get('/getID/:filename', authenticationMiddleware(), function (req, res) {
+router.get('/getID/:sim_or_real/:filename', authenticationMiddleware(), function (req, res) {
     var db = require('../db.js');
+    var sim_or_real = req.params.sim_or_real;
     var filename = req.params.filename;
     console.log("getID: " + filename);
 
@@ -143,21 +144,40 @@ router.get('/getID/:filename', authenticationMiddleware(), function (req, res) {
         console.log("filename is undefined");
         res.send(["Undefined"])
     }
-    else{
-	    console.log("Getting filename");
-        db.query('SELECT id FROM data WHERE filename=?', [filename], function (err, results, fields)  {
-            // If error occures, throw it
-            if (err) throw err;
+    else {
+        if (sim_or_real == "data") {
+            console.log("Getting filename");
+            db.query('SELECT id FROM ' + sim_or_real + ' WHERE filename=?', [filename], function (err, results, fields) {
+                // If error occures, throw it
+                if (err) throw err;
 
-            // Send back the id from the results if a result is found, otherwise send back 'none'
-            if (results.length != 0) {
-                console.log("Result for ID: " + results[0].id);
-                res.send([results[0].id]);
-            }
-            else {
-                res.send(["No ID found"])
-            }
-        });
+                // Send back the id from the results if a result is found, otherwise send back 'none'
+                if (results.length != 0) {
+                    console.log("Result for ID: " + results[0].id);
+                    res.send([results[0].id]);
+                }
+                else {
+                    res.send(["No ID found"])
+                }
+            });
+        }
+        else if (sim_or_real == "simulation") {
+            console.log("Getting filename");
+            db.query('SELECT id FROM ' + sim_or_real + ' WHERE filename_energy=?', [filename], function (err, results, fields) {
+                // If error occures, throw it
+                if (err) throw err;
+
+                // Send back the id from the results if a result is found, otherwise send back 'none'
+                if (results.length != 0) {
+                    console.log("Result for ID: " + results[0].id);
+                    res.send([results[0].id]);
+                }
+                else {
+                    res.send(["No ID found"])
+                }
+            });
+        }
+	    
     }
     console.log("getID ended");
 });
@@ -269,25 +289,16 @@ router.get('/getAllGPS/:sim_real/:selector/:value', authenticationMiddleware(), 
     var sim_or_real = req.params.sim_real;
     console.log("Getting from table: "+sim_or_real)
     // Get some driving cycle data
-    db.query('SELECT id, filename, vin, totalKM, energyConsumption FROM ' + sim_or_real, function (err, results, fields) {
-        // If error occures, throw it
-        if (err) throw err;
-        // Define tmp as an array
-        var tmp = [];
-        // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
-        for (var i = 0; i < results.length; i++) {
-	        console.log("result")
-            if (value == "none") {
-                tmp.push({
-                    filename: results[i].filename,
-                    totalKM: results[i].totalKM,
-                    energyConsumption: results[i].energyConsumption,
-                    id: results[i].id
-                })
-            }
-            else if (selector == "vin") {
-                // The vin is saved as a hash in the database, so it has to be compared with bcrypt
-                if (bcrypt.compareSync(value, results[i].vin)) {
+    if (sim_or_real == "data") {
+        db.query('SELECT id, filename, vin, totalKM, energyConsumption FROM ' + sim_or_real, function (err, results, fields) {
+            // If error occures, throw it
+            if (err) throw err;
+            // Define tmp as an array
+            var tmp = [];
+            // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
+            for (var i = 0; i < results.length; i++) {
+                console.log("result")
+                if (value == "none") {
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
@@ -295,85 +306,210 @@ router.get('/getAllGPS/:sim_real/:selector/:value', authenticationMiddleware(), 
                         id: results[i].id
                     })
                 }
+                else if (selector == "vin") {
+                    // The vin is saved as a hash in the database, so it has to be compared with bcrypt
+                    if (bcrypt.compareSync(value, results[i].vin)) {
+                        tmp.push({
+                            filename: results[i].filename,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id
+                        })
+                    }
+                }
+                else if (selector == "km_min") {
+                    var km_min = parseFloat(value);
+                    console.log(km_min);
+                    if ((km_min != NaN) && (km_min <= results[i].totalKM)) {
+                        console.log("File added: " + results[i].filename);
+                        tmp.push({
+                            filename: results[i].filename,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id
+                        })
+                    }
+                }
+                else if (selector == "consumption_min") {
+                    var consumption_min = parseFloat(value);
+                    if (consumption_min != NaN && consumption_min <= results[i].energyConsumption) {
+                        tmp.push({
+                            filename: results[i].filename,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id
+                        })
+                    }
+                }
+                else if (selector == "id") {
+                    var id = parseInt(value);
+                    if (id != NaN && id == results[i].id) {
+                        tmp.push({
+                            filename: results[i].filename,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id
+                        })
+                    }
+                }
             }
-            else if (selector == "km_min") {
-                var km_min = parseFloat(value);
-                console.log(km_min);
-                if ((km_min != NaN) && (km_min <= results[i].totalKM)) {
-                    console.log("File added: " + results[i].filename);
+            // Define the array data
+            var data = [];
+            // Define some necessary variables
+            var averageTripLength = 0;
+            var longestTrip = 0;
+            var vConsumption = 0;
+            // For every driving cycle in the array tmp, log the JSON filename, parse the JSON file as an JSON object, delete all data but
+            // the GPS coordinates and calculate the relevant values (average trip length, longest trip, total energy consumption).
+            for (var i = 0; i < tmp.length; i++) {
+                console.log("File: " + tmp[i].filename)
+                var address = '../../datafiles/' + tmp[i].filename;
+                data[i] = JSON.parse(fs.readFileSync(address));
+                delete data[i]['AMBIANT_AIR_TEMP'];
+                delete data[i]['RPM'];
+                delete data[i]['RELATIVE_ACCEL_POS'];
+                delete data[i]['FUEL_LEVEL'];
+                delete data[i]['MAF'];
+                delete data[i]['COMMANDED_EQUIV_RATIO'];
+                delete data[i]['SPEED'];
+                delete data[i]['ENGINE_LOAD'];
+                // Add filename to dictionary
+                data[i]['filename'] = tmp[i].filename;
+                // Calculate the average trip length and the total energy consumption
+                averageTripLength += tmp[i].totalKM / tmp.length;
+                if (longestTrip <= tmp[i].totalKM) {
+                    longestTrip = tmp[i].totalKM;
+                }
+                vConsumption += tmp[i].energyConsumption;
+            }
+            // Log the average trip length
+            console.log("averageTripLength: " + averageTripLength)
+            // Append general information as a dictionary to the data array
+            data.push({
+                averageTripLength: averageTripLength,
+                longestTrip: longestTrip,
+                vConsumption: vConsumption / (tmp.length * averageTripLength) * 100
+            })
+            console.log("General information pushed to data");
+            // Send the http response as the array of data
+            res.send(data);
+            console.log("GetAllGPS ended");
+        });
+    }
+    else if (sim_or_real == "simulation") {
+        db.query('SELECT id, filename, vin, totalKM, energyConsumption, filename_energy FROM ' + sim_or_real, function (err, results, fields) {
+            // If error occures, throw it
+            if (err) throw err;
+            // Define tmp as an array
+            var tmp = [];
+            // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
+            for (var i = 0; i < results.length; i++) {
+                console.log("result")
+                if (value == "none") {
                     tmp.push({
                         filename: results[i].filename,
                         totalKM: results[i].totalKM,
                         energyConsumption: results[i].energyConsumption,
-                        id: results[i].id
+                        id: results[i].id,
+                        filename_energy: results[i].filename_energy
                     })
                 }
-            }
-            else if (selector == "consumption_min") {
-                var consumption_min = parseFloat(value);
-                if (consumption_min != NaN && consumption_min <= results[i].energyConsumption) {
-                    tmp.push({
-                        filename: results[i].filename,
-                        totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption,
-                        id: results[i].id
-                    })
+                else if (selector == "vin") {
+                    // The vin is saved as a hash in the database, so it has to be compared with bcrypt
+                    if (bcrypt.compareSync(value, results[i].vin)) {
+                        tmp.push({
+                            filename: results[i].filename,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id,
+                            filename_energy: results[i].filename_energy
+                        })
+                    }
+                }
+                else if (selector == "km_min") {
+                    var km_min = parseFloat(value);
+                    console.log(km_min);
+                    if ((km_min != NaN) && (km_min <= results[i].totalKM)) {
+                        console.log("File added: " + results[i].filename);
+                        tmp.push({
+                            filename: results[i].filename,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id,
+                            filename_energy: results[i].filename_energy
+                        })
+                    }
+                }
+                else if (selector == "consumption_min") {
+                    var consumption_min = parseFloat(value);
+                    if (consumption_min != NaN && consumption_min <= results[i].energyConsumption) {
+                        tmp.push({
+                            filename: results[i].filename,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id,
+                            filename_energy: results[i].filename_energy
+                        })
+                    }
+                }
+                else if (selector == "id") {
+                    var id = parseInt(value);
+                    if (id != NaN && id == results[i].id) {
+                        tmp.push({
+                            filename: results[i].filename,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id,
+                            filename_energy: results[i].filename_energy
+                        })
+                    }
                 }
             }
-            else if (selector == "id") {
-                var id = parseInt(value);
-                if (id != NaN && id == results[i].id) {
-                    tmp.push({
-                        filename: results[i].filename,
-                        totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption,
-                        id: results[i].id
-                    })
+            // Define the array data
+            var data = [];
+            // Define some necessary variables
+            var averageTripLength = 0;
+            var longestTrip = 0;
+            var vConsumption = 0;
+            // For every driving cycle in the array tmp, log the JSON filename, parse the JSON file as an JSON object, delete all data but
+            // the GPS coordinates and calculate the relevant values (average trip length, longest trip, total energy consumption).
+            for (var i = 0; i < tmp.length; i++) {
+                console.log("File: " + tmp[i].filename)
+                var address = '../../datafiles/' + tmp[i].filename;
+                data[i] = JSON.parse(fs.readFileSync(address));
+                delete data[i]['AMBIANT_AIR_TEMP'];
+                delete data[i]['RPM'];
+                delete data[i]['RELATIVE_ACCEL_POS'];
+                delete data[i]['FUEL_LEVEL'];
+                delete data[i]['MAF'];
+                delete data[i]['COMMANDED_EQUIV_RATIO'];
+                delete data[i]['SPEED'];
+                delete data[i]['ENGINE_LOAD'];
+                // Add filename to dictionary
+                data[i]['filename'] = tmp[i].filename;
+                // Calculate the average trip length and the total energy consumption
+                averageTripLength += tmp[i].totalKM / tmp.length;
+                if (longestTrip <= tmp[i].totalKM) {
+                    longestTrip = tmp[i].totalKM;
                 }
+                vConsumption += tmp[i].energyConsumption;
             }
-        }
-        // Define the array data
-        var data = [];
-        // Define some necessary variables
-        var averageTripLength = 0;
-        var longestTrip = 0;
-        var vConsumption = 0;
-        // For every driving cycle in the array tmp, log the JSON filename, parse the JSON file as an JSON object, delete all data but
-        // the GPS coordinates and calculate the relevant values (average trip length, longest trip, total energy consumption).
-        for(var i = 0; i < tmp.length; i++) {
-            console.log("File: " + tmp[i].filename)
-            var address = '../../datafiles/' + tmp[i].filename;
-            data[i] = JSON.parse(fs.readFileSync(address));
-            delete data[i]['AMBIANT_AIR_TEMP'];
-            delete data[i]['RPM'];
-            delete data[i]['RELATIVE_ACCEL_POS'];
-            delete data[i]['FUEL_LEVEL'];
-            delete data[i]['MAF'];
-            delete data[i]['COMMANDED_EQUIV_RATIO'];
-            delete data[i]['SPEED'];
-            delete data[i]['ENGINE_LOAD'];
-            // Add filename to dictionary
-            data[i]['filename'] = tmp[i].filename;
-            // Calculate the average trip length and the total energy consumption
-            averageTripLength += tmp[i].totalKM / tmp.length;
-            if(longestTrip <= tmp[i].totalKM) {
-            longestTrip = tmp[i].totalKM;
-            }
-            vConsumption += tmp[i].energyConsumption;
-        }
-        // Log the average trip length
-        console.log("averageTripLength: " + averageTripLength)
-        // Append general information as a dictionary to the data array
-        data.push({
-            averageTripLength: averageTripLength,
-            longestTrip: longestTrip,
-            vConsumption: vConsumption / (tmp.length * averageTripLength) * 100
-        })
-	console.log("General information pushed to data");
-        // Send the http response as the array of data
-        res.send(data);
-	console.log("GetAllGPS ended");
-    });
+            // Log the average trip length
+            console.log("averageTripLength: " + averageTripLength)
+            // Append general information as a dictionary to the data array
+            data.push({
+                averageTripLength: averageTripLength,
+                longestTrip: longestTrip,
+                vConsumption: vConsumption / (tmp.length * averageTripLength) * 100
+            })
+            console.log("General information pushed to data");
+            // Send the http response as the array of data
+            res.send(data);
+            console.log("GetAllGPS ended");
+        });
+    }
+
+    
 });
 
 
