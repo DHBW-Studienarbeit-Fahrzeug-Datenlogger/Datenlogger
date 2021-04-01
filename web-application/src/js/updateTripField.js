@@ -148,10 +148,14 @@ var update = async function () {
     console.log(filenames)
     var nof = 0;
     var fn = [];
+    var fn_energy = [];
     $("#allTrips").empty()
     filenames.forEach(file => {
         console.log(file.filename)
         fn.push(file.filename)
+        if (sim_real == "simulation") {
+            fn_energy.push(file.filename_energy)
+        }
         nof++;
         var innerHTML = `<label class='tripButton btn btn-secondary active'>
                             <input type='checkbox' class='filename' filename='${file.filename}' checked autocomplete='off'>
@@ -163,7 +167,7 @@ var update = async function () {
                         </label>`
         $("#allTrips").append(innerHTML)
     });
-    printMarkers(fn, nof);
+    printMarkers(fn, nof, fn_energy);
     $("#charts").empty()
     if(nof === 0) {
         $("#dataPart").css("display", "none")
@@ -198,7 +202,7 @@ var update = async function () {
                     }
                 }
                 console.log(filenames);
-                printMarkers(filenames, nof);
+                printMarkers(filenames, nof, fn_energy);
             });
         }
     });

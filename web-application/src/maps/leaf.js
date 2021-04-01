@@ -299,7 +299,7 @@ var map = L.map( 'map1', {
     zoom: 2
 });
 
-var printMarkers = async function(filename, nof) {
+var printMarkers = async function(filename, nof, filename_energy) {
     map.remove();
 
     map = L.map( 'map1', {
@@ -342,11 +342,20 @@ var printMarkers = async function(filename, nof) {
             let allData = await response2.json();
 
             // Get the id for the drive cycle
-            console.log("Get ID for cycle: " + filename[g])
-            let response3 = await fetch("/getID/" + filename[g], {
-                credentials: 'same-origin'
-            });
-            let id = await response3.json();
+            if (filename_energy.length >= g + 1) {
+                console.log("Get ID for cycle: " + filename[g])
+                let response3 = await fetch("/getID/" + "simulation/" + filename_energy[g], {
+                    credentials: 'same-origin'
+                });
+                var id = await response3.json();
+            }
+            else {
+                console.log("Get ID for cycle: " + filename[g])
+                let response3 = await fetch("/getID/" + "data/" + filename[g], {
+                    credentials: 'same-origin'
+                });
+                var id = await response3.json();
+            }
             console.log("ID:")
             console.log(id)
 	    

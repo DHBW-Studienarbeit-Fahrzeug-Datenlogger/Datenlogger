@@ -672,26 +672,17 @@ router.get('/getTrips/:date/:sim_real/:selector/:value', authenticationMiddlewar
     // Determine whether to get data from table data (real cycles) or table simulations (simulated cycles)
     var sim_or_real = req.params.sim_real;
 
+
     // Get some driving cycle data from the cycles of the specified date
-    db.query('SELECT id, filename, starttime, totalKM, vin, energyConsumption FROM ' + sim_or_real + ' WHERE date=?', [date], function (err, results, fields) {
-        // If error occures, throw it
-        if (err) throw err;
-        // Define array data
-        var data = [];
-        // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
-        for (var i = 0; i < results.length; i++) {
-            if (value == "none") {
-                data.push({
-                    filename: results[i].filename,
-                    starttime: results[i].starttime,
-                    totalKM: results[i].totalKM,
-                    energyConsumption: results[i].energyConsumption,
-                    id: results[i].id
-                })
-            }
-            else if (selector == "vin") {
-                // The vin is saved as a hash in the database, so it has to be compared with bcrypt
-                if (bcrypt.compareSync(value, results[i].vin)) {
+    if (sim_or_real == "data") {
+        db.query('SELECT id, filename, starttime, totalKM, vin, energyConsumption FROM ' + sim_or_real + ' WHERE date=?', [date], function (err, results, fields) {
+            // If error occures, throw it
+            if (err) throw err;
+            // Define array data
+            var data = [];
+            // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
+            for (var i = 0; i < results.length; i++) {
+                if (value == "none") {
                     data.push({
                         filename: results[i].filename,
                         starttime: results[i].starttime,
@@ -700,47 +691,136 @@ router.get('/getTrips/:date/:sim_real/:selector/:value', authenticationMiddlewar
                         id: results[i].id
                     })
                 }
+                else if (selector == "vin") {
+                    // The vin is saved as a hash in the database, so it has to be compared with bcrypt
+                    if (bcrypt.compareSync(value, results[i].vin)) {
+                        data.push({
+                            filename: results[i].filename,
+                            starttime: results[i].starttime,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id
+                        })
+                    }
+                }
+                else if (selector == "km_min") {
+                    var km_min = parseFloat(value);
+                    if (km_min != NaN && km_min <= results[i].totalKM) {
+                        data.push({
+                            filename: results[i].filename,
+                            starttime: results[i].starttime,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id
+                        })
+                    }
+                }
+                else if (selector == "consumption_min") {
+                    var consumption_min = parseFloat(value);
+                    if (consumption_min != NaN && consumption_min <= results[i].energyConsumption) {
+                        data.push({
+                            filename: results[i].filename,
+                            starttime: results[i].starttime,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id
+                        })
+                    }
+                }
+                else if (selector == "id") {
+                    var id = parseInt(value);
+                    if (id != NaN && id == results[i].id) {
+                        data.push({
+                            filename: results[i].filename,
+                            starttime: results[i].starttime,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id
+                        })
+                    }
+                }
             }
-            else if (selector == "km_min") {
-                var km_min = parseFloat(value);
-                if (km_min != NaN && km_min <= results[i].totalKM) {
+            // Send http response as array data
+            res.send(data);
+        });
+    }
+    else if (sim_or_real == "simulation") {
+        db.query('SELECT id, filename, starttime, totalKM, vin, energyConsumption, filename_energy FROM ' + sim_or_real + ' WHERE date=?', [date], function (err, results, fields) {
+            // If error occures, throw it
+            if (err) throw err;
+            // Define array data
+            var data = [];
+            // For every driving cycle in the result, if the selectors value matches, append a dictionary of the cycle data to the array tmp
+            for (var i = 0; i < results.length; i++) {
+                if (value == "none") {
                     data.push({
                         filename: results[i].filename,
                         starttime: results[i].starttime,
                         totalKM: results[i].totalKM,
                         energyConsumption: results[i].energyConsumption,
-                        id: results[i].id
+                        id: results[i].id,
+                        filename_energy: results[i].filename_energy
                     })
                 }
-            }
-            else if (selector == "consumption_min") {
-                var consumption_min = parseFloat(value);
-                if (consumption_min != NaN && consumption_min <= results[i].energyConsumption) {
-                    data.push({
-                        filename: results[i].filename,
-                        starttime: results[i].starttime,
-                        totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption,
-                        id: results[i].id
-                    })
+                else if (selector == "vin") {
+                    // The vin is saved as a hash in the database, so it has to be compared with bcrypt
+                    if (bcrypt.compareSync(value, results[i].vin)) {
+                        data.push({
+                            filename: results[i].filename,
+                            starttime: results[i].starttime,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id,
+                            filename_energy: results[i].filename_energy
+                        })
+                    }
+                }
+                else if (selector == "km_min") {
+                    var km_min = parseFloat(value);
+                    if (km_min != NaN && km_min <= results[i].totalKM) {
+                        data.push({
+                            filename: results[i].filename,
+                            starttime: results[i].starttime,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id,
+                            filename_energy: results[i].filename_energy
+                        })
+                    }
+                }
+                else if (selector == "consumption_min") {
+                    var consumption_min = parseFloat(value);
+                    if (consumption_min != NaN && consumption_min <= results[i].energyConsumption) {
+                        data.push({
+                            filename: results[i].filename,
+                            starttime: results[i].starttime,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id,
+                            filename_energy: results[i].filename_energy
+                        })
+                    }
+                }
+                else if (selector == "id") {
+                    var id = parseInt(value);
+                    if (id != NaN && id == results[i].id) {
+                        data.push({
+                            filename: results[i].filename,
+                            starttime: results[i].starttime,
+                            totalKM: results[i].totalKM,
+                            energyConsumption: results[i].energyConsumption,
+                            id: results[i].id,
+                            filename_energy: results[i].filename_energy
+                        })
+                    }
                 }
             }
-            else if (selector == "id") {
-                var id = parseInt(value);
-                if (id != NaN && id == results[i].id) {
-                    data.push({
-                        filename: results[i].filename,
-                        starttime: results[i].starttime,
-                        totalKM: results[i].totalKM,
-                        energyConsumption: results[i].energyConsumption,
-                        id: results[i].id
-                    })
-                }
-            }
-        }
-        // Send http response as array data
-        res.send(data);
-    });
+            // Send http response as array data
+            res.send(data);
+        });
+    }
+
+    
 });
 
 
