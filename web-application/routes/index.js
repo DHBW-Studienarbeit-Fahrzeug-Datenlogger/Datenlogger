@@ -483,8 +483,9 @@ router.get('/getAllGPS/:sim_real/:selector/:value', authenticationMiddleware(), 
                 delete data[i]['COMMANDED_EQUIV_RATIO'];
                 delete data[i]['SPEED'];
                 delete data[i]['ENGINE_LOAD'];
-                // Add filename to dictionary
+                // Add filenames to dictionary
                 data[i]['filename'] = tmp[i].filename;
+                data[i]['filename_energy'] = tmp[i].filename_energy;
                 // Calculate the average trip length and the total energy consumption
                 averageTripLength += tmp[i].totalKM / tmp.length;
                 if (longestTrip <= tmp[i].totalKM) {
