@@ -245,12 +245,10 @@ router.get('/createSimulation/:car_id/:route_id', authenticationMiddleware(), fu
         scriptPath: 'src/python'
     };
 
-    var result = [];
-
     PythonShell.run('call_simulation.py', options, function (err, results) {
         if (err) throw err;
         console.log(results)
-        res.send(result);
+        res.send(results);
     });
 });
 

@@ -50,8 +50,8 @@ def get_entry(table, identifier):
         """
     i = 0
     j = 0
-    print(table)
-    print(identifier)
+    #print(table)
+    #print(identifier)
     for row in table:
         for field in row:
             if field == identifier:
