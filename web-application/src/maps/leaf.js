@@ -53,13 +53,13 @@ var printAllMarkers = async function() {
 	
         // Get the id for the drive cycle
         if (sim_real == "data") {
-            let response3 = await fetch("/getID/" + sim_real + "/" + + markers[i].filename, {
+            let response3 = await fetch("/getID/" + sim_real + "/" + markers[i].filename, {
                 credentials: 'same-origin'
             });
             var id = await response3.json();
         }
         else if (sim_real == "simulation") {
-            let response3 = await fetch("/getID/" + sim_real + "/" + + markers[i].filename_energy, {
+            let response3 = await fetch("/getID/" + sim_real + "/" + markers[i].filename_energy, {
                 credentials: 'same-origin'
             });
             var id = await response3.json();
