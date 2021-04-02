@@ -278,6 +278,7 @@ class LogFile:
             for i, tmp in enumerate(ip):
                 # Create a command to send the JSON file to the database server
                 cmd = "sshpass -p '" + str(env.DB_PASSWORD) + "' scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/home/pi/known_host -r " + str(path) + "JSON/" + str(filename) + " pi@" + str(ip[i]) +":datafiles/"
+                cmd = "sshpass -p '" + str(env.DB_PASSWORD) + "' scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/home/pi/known_host -r " + str(path) + "JSON/" + str(self._filename_height_profile) + " pi@" + str(ip[i]) +":datafiles/"
                 # Create a new process with pipes for the channels (std) and 
                 # execute the created command
                 proc =  Popen([cmd], stdin=PIPE, stdout=PIPE,  stderr=PIPE, shell=True)
