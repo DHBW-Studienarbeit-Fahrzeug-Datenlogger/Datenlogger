@@ -73,7 +73,9 @@ var printAllMarkers = async function() {
                 credentials: 'same-origin'
             });
             let energyData = await response4.json();
-            pop_text = pop_text + "<p>Temperatur energy: " + energyData.energy_heat.pop() + "</p><p>Driving energy: " + energyData.energy_drive.pop() + "</p><p>Total energy: " + (energyData.energy_heat.pop() + energyData.energy_drive.pop()) + "</p>";
+            temp_energy = energyData.energy_heat.pop();
+            drive_energy = energyData.energy_drive.pop();
+            pop_text = pop_text + "<p>Temperatur energy: " + temp_energy + "</p><p>Driving energy: " + drive_energy + "</p><p>Total energy: " + (temp_energy + drive_energy) + "</p>";
         }
         
 	
@@ -377,7 +379,9 @@ var printMarkers = async function(filename, nof, filename_energy) {
                     credentials: 'same-origin'
                 });
                 let energyData = await response4.json();
-                pop_text = pop_text + "<p>Temperatur energy: " + energyData.energy_heat.pop() + "</p><p>Driving energy: " + energyData.energy_drive.pop() + "</p><p>Total energy: " + (energyData.energy_heat.pop() + energyData.energy_drive.pop()) + "</p>";
+                temp_energy = energyData.energy_heat.pop();
+                drive_energy = energyData.energy_drive.pop();
+                pop_text = pop_text + "<p>Temperatur energy: " + temp_energy + "</p><p>Driving energy: " + drive_energy + "</p><p>Total energy: " + (temp_energy + drive_energy) + "</p>";
             }
 	    
             markers = await removeNull(markers);
