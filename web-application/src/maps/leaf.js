@@ -64,6 +64,17 @@ var printAllMarkers = async function() {
             });
             var id = await response3.json();
         }
+
+        var pop_text = "";
+
+        // Get the energy data if the route is simulated
+        if (sim_real == "simulation") {
+            let response4 = await fetch("/getEnergyData/" + markers[i].filename_energy, {
+                credentials: 'same-origin'
+            });
+            let energyData = await response4.json();
+            pop_text = pop_text + "<p>Temperatur energy: " + energyData.energy_heat.pop() + "</p><p>Driving energy: " + energyData.energy_drive.pop() + "</p><p>Total energy: " + (energyData.energy_heat.pop() + energyData.energy_drive.pop()) + "</p>";
+        }
         
 	
         for (let g = 0; g < markers[i].GPS_Long.length; g++) {
@@ -74,7 +85,7 @@ var printAllMarkers = async function() {
                     "lng": markers[i].GPS_Long[g]
                 });
                 L.marker([markers[i].GPS_Lat[g], markers[i].GPS_Long[g]], { icon: customIcon })
-                    .bindPopup('<p>Route-ID:' + id[0] + '</p>')
+                    .bindPopup('<p>Route-ID:' + id[0] + '</p>' + pop_text)
                     .addTo( map0 );
                 /*
                 if(g != 0) {
@@ -358,6 +369,16 @@ var printMarkers = async function(filename, nof, filename_energy) {
             }
             console.log("ID:")
             console.log(id)
+
+            pop_text = "";
+            // Get the energy data if the route is simulated
+            if (filename_energy.length >= g + 1) {
+                let response4 = await fetch("/getEnergyData/" + filename_energy[g], {
+                    credentials: 'same-origin'
+                });
+                let energyData = await response4.json();
+                pop_text = pop_text + "<p>Temperatur energy: " + energyData.energy_heat.pop() + "</p><p>Driving energy: " + energyData.energy_drive.pop() + "</p><p>Total energy: " + (energyData.energy_heat.pop() + energyData.energy_drive.pop()) + "</p>";
+            }
 	    
             markers = await removeNull(markers);
             allMarkers.push(markers)
@@ -373,7 +394,7 @@ var printMarkers = async function(filename, nof, filename_energy) {
                 }
                 L.marker( [markers[i].lat, markers[i].lng], {opacity: tmp})
                     //TODO: show start and stop time
-                    .bindPopup( '<p>Route-ID:' + id[0] + '</p>' )
+                    .bindPopup('<p>Route-ID:' + id[0] + '</p>' + pop_text)
                     .addTo( map );
 
                 if ((i + 1) < markers.length) {

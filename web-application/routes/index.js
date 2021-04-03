@@ -275,6 +275,18 @@ router.get('/getGPS/:token', authenticationMiddleware(), function (req, res) {
 
 
 
+// GET the energy data of the given filename
+router.get('/getEnergyData/:token', authenticationMiddleware(), function (req, res) {
+    // Get the JSON file with the specified filename
+    var address = '../../datafiles/' + req.params.token;
+    // Parse the JSON file as the JSON object data
+    var data = JSON.parse(fs.readFileSync(address, 'utf8'));
+    // Send the http response as the JSON object
+    res.send(data);
+});
+
+
+
 // GET the gps data of the given vin
 router.get('/getAllGPS/:sim_real/:selector/:value', authenticationMiddleware(), function (req, res) {
     // Get the specified selector and value
