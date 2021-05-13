@@ -23,6 +23,41 @@ Description:
     - Creation of header
     - Basic structuring
 
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 28.12.2020
+
+Version 1.1
+
+Description:
+    - Route to get the additional data neccessary for the height profile diagramm
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 11.03.2021
+
+Version 1.2
+
+Description:
+    - Updating the routes getAllGPS, getWaitingTime and getTrips so the new choosable parameters for
+      the route representation are applied
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 21.03.2021
+
+Version 1.3
+
+Description:
+    - Appending the route getID so the ID of the route can be displayed in the map
+    - Appending the routes getIDs and getAllCars to get the choosable parameters for teh simulation
+    - Appending the route createSimulation to start the python script that creates the simulation
 */
 
 
@@ -135,15 +170,18 @@ router.get('/getAddData/:token', authenticationMiddleware(), function (req, res)
 
 // GET the ID for the route from a given filename
 router.get('/getID/:sim_or_real/:filename', authenticationMiddleware(), function (req, res) {
+    // Get the parameters to extract from the database
     var db = require('../db.js');
     var sim_or_real = req.params.sim_or_real;
     var filename = req.params.filename;
     console.log("getID: " + filename);
 
+    // If ID is not found
     if(filename === "undefined" || filename === undefined){
         console.log("filename is undefined");
         res.send(["Undefined"])
     }
+    // Extract the ID from the simulation or teh data table in the database
     else {
         if (sim_or_real == "data") {
             console.log("Getting filename");
@@ -234,9 +272,11 @@ router.get('/createSimulation/:car_id/:route_id', authenticationMiddleware(), fu
     console.log("Creating simulation");
     let { PythonShell } = require('python-shell')
 
+    // Get the parameters for the simulation
     var car_id = req.params.car_id;
     var route_id = req.params.route_id;
 
+    // Define the options for python-shell
     var options = {
         // Each line of data ending with '\n' is emitted as a message
         mode: 'text',
@@ -245,6 +285,7 @@ router.get('/createSimulation/:car_id/:route_id', authenticationMiddleware(), fu
         scriptPath: 'src/python'
     };
 
+    // Run the python script "call_simulation.py" via python-shell
     PythonShell.run('call_simulation.py', options, function (err, results) {
         if (err) throw err;
         console.log(results)

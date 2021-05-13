@@ -1,14 +1,41 @@
+/*
+Created by: Dennis Deckert, Pascal Hirsekorn, Silas Mayer, Chris Papke
+
+Version: 1.0
+
+Description:
+    Handles the calculation of the recommended car for the user when the button is clicked.
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 21.11.2020
+
+Version 1.0
+
+Description:
+    - Commentation of code
+    - Creation of header
+    - Basic structuring
+
+*/
+
+
 var averageTripLength = 0;
 var numberOfTrips = 0;
 var longestTrip = 0;
 var vConsumption = 0;
 
+// Function to calculate the recommended car
 var calculateCar = async function(){
+    // Declare neccessary variables
     var type;
     var energyConsumptionFactor;
     var bestCar;
     console.log("averageTripLength: "+ averageTripLength)
     console.log((document.getElementById('input01')).value)
+    // Switch case what type of car shall be calculated
     switch ((document.getElementById('input01')).value) {
         case "1":
             type = "micro"
@@ -28,6 +55,7 @@ var calculateCar = async function(){
         default:
             break;
     }
+    // Switch case with which factor the calculation shall be done --> driving style (normal, eco, athletic)
     switch ((document.getElementById('input02')).value) {
         case "1":
             energyConsumptionFactor = 0.9
@@ -43,14 +71,20 @@ var calculateCar = async function(){
     }
 
     console.log(type);
+    // Get the cars of the chosen type
     let response = await fetch("/getCars/" + type, {
         credentials: 'same-origin'
     });
 
     let cars = await response.json();
+
+    // Declare variables
     var range = [];
     var count = 0;
     var deltaToAverage = averageTripLength;
+
+    // Compare the range of each car with the average trip length from the routes to determine the recommended car
+    // The car is the one that has a range bigger than the average trip length but also the range with the smallest difference
     for(let i = 0; i < cars.length; i++) {
         range[i] = (cars[i].capacity / (cars[i].consumption * energyConsumptionFactor)) * 100;
         if(((range[i] - averageTripLength) < deltaToAverage) && (range[i] > averageTripLength)) {
@@ -61,7 +95,7 @@ var calculateCar = async function(){
         }
         console.log("Range: " + range[i])
     }
-    //falls kein Fahrzeug passt, muss das beste gewählt werden
+    // If no car matches the average trip length, choose the car with the greatest range
     if(count == cars.length) {
         bestCar = 0;
         for(let i = 0; i < cars.length; i++) {
@@ -70,6 +104,8 @@ var calculateCar = async function(){
             }
         }
     }
+
+    // Empty the division that displays the recommendation
     $("#car").empty()
     $("#range").empty()
     $("#eConsumption").empty()
@@ -78,6 +114,7 @@ var calculateCar = async function(){
     $("#chargeStops").empty()
     $("#vConsumption").empty()
     $("#table").css("display", "")
+    // Display the recommended car with its parameters
     if(averageTripLength != 0) {
         var innerHTML = `${cars[bestCar].name}`
         $("#car").append(innerHTML)
@@ -93,6 +130,7 @@ var calculateCar = async function(){
         $("#chargeStops").append(innerHTML)
         innerHTML = `${vConsumption.toFixed(2)}kWh/100km`
         $("#vConsumption").append(innerHTML)
+    // If there is no route, give a message
     } else {
         var innerHTML = `noch keine Fahrt`
         $("#car").append(innerHTML)

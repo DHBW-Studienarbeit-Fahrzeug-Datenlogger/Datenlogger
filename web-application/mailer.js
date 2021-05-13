@@ -5,7 +5,7 @@ Version: 1.0
 
 Description:
     Contains the email handler. Sends the user an email with a link to the 
-    requested page. THat can be to confirm the mail address, to reset the password
+    requested page. That can be to confirm the mail address, to reset the password
     or a link to the homepage of the web application.
     Exports the mailer function.
 

@@ -55,6 +55,7 @@ except:
 cursor = db.cursor()
 cursor.execute("SELECT id FROM simulation")
 
+# Get the highest ID --> the latest simulation
 ID = 0
 for id_count in cursor:
     if id_count[0] > ID:

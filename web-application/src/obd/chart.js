@@ -1,4 +1,38 @@
-var getData = async function(filename, name) {
+/*
+Created by: Dennis Deckert, Pascal Hirsekorn, Silas Mayer, Chris Papke
+
+Version: 1.0
+
+Description:
+    Contains the function to create the diagramm for the vehicle data. The 
+    diagramm is placed under the third map.
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 21.11.2020
+
+Version 1.0
+
+Description:
+    - Commentation of code
+    - Creation of header
+    - Basic structuring
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 28.12.2020
+
+Version 1.1
+
+Description:
+    - Another diagramm representing the height profile is appended
+*/
+
+var getData = async function (filename, name) {
     // sends a request with credentials included
     let response = await fetch("/getOBD/" + filename, {
         credentials: 'same-origin'
@@ -24,13 +58,7 @@ var getData = async function(filename, name) {
     // USE THE RIGHT VARIABLE NAMES
     var timeAdd = allData.TIME;
     var height = addData.gps_alt;
-    /*
-    var engine_load = [];
-    var maf = [];
-    var temperature = [];
-    var pedal = [];
-    var afr = [];
-    var fuel_level = [];*/
+
     var data = [time, speed, rpm/*, engine_load, maf, temperature, pedal, afr, fuel_level*/];
     var dataAdditional = [timeAdd, height];
 
@@ -97,7 +125,6 @@ var getData = async function(filename, name) {
         title: name + " height profile",
         xaxis:
         {
-            //domain: [0.25, 1],
             showgrid: false
         },
         yaxis:
@@ -114,7 +141,8 @@ var getData = async function(filename, name) {
         'displaylogo': false,
         'responsive': true
     }
-    // IF NOT WORKING, CREATE SUBPLOTS
+
+    // Create the diagramms
     Plotly.newPlot(name, data, layout, config);
     Plotly.newPlot(name + " height profile", [heightTrace], layoutAdditional, config)
 }

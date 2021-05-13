@@ -1,4 +1,53 @@
-var displayData = function() {
+/*
+Created by: Dennis Deckert, Pascal Hirsekorn, Silas Mayer, Chris Papke
+
+Version: 1.0
+
+Description:
+    Contains the different functions for updating the frontend of the 
+    webapplication.
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 21.11.2020
+
+Version 1.0
+
+Description:
+    - Commentation of code
+    - Creation of header
+    - Basic structuring
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 28.12.2020
+
+Version 1.1
+
+Description:
+    - Function to control the creation of the diagramm for the height profile.
+
+-------------------------------------------------------------------------------
+
+Update by: Tim Hager
+
+Date: 17.04.2020
+
+Version 1.2
+
+Description:
+    - Switch between the interfaces (by clicking in the sidebar) and show only one
+    - Control the creation of the simulated route by calling the backend route and providing the parameters
+      as well as creating the map views for the simulated route
+*/
+
+
+// Function to display the map view in the dashboard instead of the parameter interfaces
+var displayData = function () {
     $("#headerVinEingabe").css("display", "")
     $("#sidebar").css("display", "")
     $("#firstPart").css("display", "")
@@ -8,9 +57,13 @@ var displayData = function() {
     $("#sidebar_navigation_data").css("display", "")
     $("#sidebar_simulation_real").css("display", "none")
 
+    // Get the given VIN
+    // Set the parameter in the header menu
     var vin = document.getElementById('firstVin').value;
     $("#VIN").val(vin);
 
+    // Get the chosen selector parameter from the dropdown list
+    // Set the parameter in the header menu
     var selector = document.getElementById('selector_select').value;
     var options = Array.from(document.querySelector("#selector").options);
     for (var j = 0; j < options.length; j++) {
@@ -19,6 +72,8 @@ var displayData = function() {
         }
     }
 
+    // Get the chosen selector parameter for recorded or simulated routes from the dropdown list
+    // Set the parameter in the header menu
     selector = document.getElementById('sim_real_select').value;
     options = Array.from(document.querySelector("#sim_real_selector").options);
     for (var j = 0; j < options.length; j++) {
@@ -26,7 +81,8 @@ var displayData = function() {
             document.querySelector("#sim_real_selector").selectedIndex = j;
         }
     }
-    
+
+    // Update the map view by activating the update button in the header menuS
     document.getElementById('VINButton').click()
 }
 
@@ -119,14 +175,18 @@ var createSimulation = async function () {
     document.getElementById('VINButton').click()
 }
 
+// Function to update the third map and also display the diagramms underneath it
 var update = async function () {
+    // Get the selected parameters
     var selector = document.getElementById('selector').value;
     var vin = document.getElementById('VIN').value;
     var sim_real = document.getElementById('sim_real_selector').value;
     console.log(vin)
     vin = (vin === "") ? "none" : vin; 
+    // Get the selected date
     var dateArray = (document.getElementById('datepicker').value).split(".")
-    var date = (dateArray[1] + '-' + dateArray[0]+ '-' + dateArray[2])
+    var date = (dateArray[1] + '-' + dateArray[0] + '-' + dateArray[2])
+    // Format the date
     if(document.getElementById('datepicker').value === "") {
         var today = new Date();
         var dd = today.getDate();
@@ -141,22 +201,31 @@ var update = async function () {
         date = mm + '-' + dd + '-' + yyyy;
     }
     console.log(date);
+
+    // Get the trip data filenames via the route
     let response = await fetch("/getTrips/" + date + "/" + sim_real + "/" + selector + "/" + vin, {
         credentials: 'same-origin'
     });
     let filenames = await response.json();
+
     console.log(filenames)
+    // Number of filenames
     var nof = 0;
+    // Array of the obd filenames and if the routes are simulated the energy filenames
     var fn = [];
     var fn_energy = [];
+    // Empty the allTrips division
     $("#allTrips").empty()
+    // For each filename:
     filenames.forEach(file => {
         console.log(file.filename)
+        // Put the filenames into the arrays and increment the number of filenames
         fn.push(file.filename)
         if (sim_real == "simulation") {
             fn_energy.push(file.filename_energy)
         }
         nof++;
+        // Create a new "container" to contain the diagramms of the matching route and append it to the emptied division
         var innerHTML = `<label class='tripButton btn btn-secondary active'>
                             <input type='checkbox' class='filename' filename='${file.filename}' checked autocomplete='off'>
                                 Fahrt ${nof}<br>
@@ -167,33 +236,37 @@ var update = async function () {
                         </label>`
         $("#allTrips").append(innerHTML)
     });
+
+    // Display the routes in the third map
     printMarkers(fn, nof, fn_energy);
+
+    // Remove the diagramms
     $("#charts").empty()
     if(nof === 0) {
         $("#dataPart").css("display", "none")
     } else {
         $("#dataPart").css("display", "")
     }
+    // Append the containers for the diagramms (holding the charts created)
     for(var h = 1; h <= nof; h++) {
         console.log("Filename: " + fn[h-1])
         $("#charts").append("<div id='Fahrt " + h + "'></div>")
         $("#charts").append("<div id='Fahrt " + h + " height profile" + "'></div>")
         getData(fn[h-1], "Fahrt " + h);
     }
+
+    // Create the diagramms
     $(function() {
         console.log($(".filename").length);
-        //console.log($(".test:eq(0)").attr('test'));
+        // Create a diagramm for each route that matched the parameters
         for(var i = 0; i < $(".filename").length; i++) {
             $(".filename:eq(" + i + ")").change(function(){
                 var filenames = [];
                 var nof = 0;
                 $("#charts").empty()
-                //console.log($(this).prop('checked'));
-                //console.log($(".test").length);
+                // Basically the same as above
                 for(var g = 0; g < $(".filename").length; g++) {
-                    //console.log($(".test:eq(" + g + ")").prop('checked'));
                     if($(".filename:eq(" + g + ")").prop('checked')) {
-                        //console.log($(".test:eq(" + g + ")").attr('test'));
                         filenames.push($(".filename:eq(" + g + ")").attr('filename'));
                         nof++;
                         $("#charts").append("<div id='Fahrt " + (g + 1) + "'></div>")
@@ -202,10 +275,12 @@ var update = async function () {
                     }
                 }
                 console.log(filenames);
+                // Show the routes in the map
                 printMarkers(filenames, nof, fn_energy);
             });
         }
     });
 }
 
+// Create empty maps when the webapplication is started
 update()
