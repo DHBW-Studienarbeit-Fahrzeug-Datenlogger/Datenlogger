@@ -61,6 +61,7 @@ Wird die Auswahl bestätigt, erfolgt ein Vorschlag für ein passendes elektrisch
 </br>
 Über die Schaltfläche *Logout* erfolgt die Abmeldung aus der Webanwendung.
 </br>
+</br>
 ## OBD Datenlogger - Datenaufnahme
 
 ### Schritt 1: Vorbereitung des Datenloggers
