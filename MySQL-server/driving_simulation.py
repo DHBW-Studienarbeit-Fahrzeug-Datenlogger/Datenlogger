@@ -89,6 +89,8 @@ def driving_simulation(velocity, road_angle_rad, rolling_friction_factor, mass, 
     air_density = 1.2041
     gravitational_constant = 9.81
 
+    velocity = velocity / 3.6
+    
     l = len(velocity)
     acceleration = np.zeros(l)
     for i in range(l - 1):
